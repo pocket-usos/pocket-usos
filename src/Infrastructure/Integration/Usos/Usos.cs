@@ -1,0 +1,146 @@
+using App.Domain.UserAccess.Authentication;
+using App.Infrastructure.Integration.Client;
+using App.Infrastructure.Integration.Exceptions;
+using App.Infrastructure.Integration.Requests;
+using App.Infrastructure.Integration.Usos.Courses;
+using App.Infrastructure.Integration.Usos.Grades;
+using App.Infrastructure.Integration.Usos.Students;
+using Microsoft.AspNetCore.WebUtilities;
+
+namespace App.Infrastructure.Integration.Usos;
+
+internal class Usos(IUsosHttpClient client) : IAuthenticationService, IStudentsProvider, IGradesProvider, ICoursesProvider
+{
+    public async Task<RequestToken> RetrieveRequestToken()
+    {
+        var request = Request.RequestToken("services/oauth/request_token")
+            .WithQueryParameter("scopes", String.Join('|', Scope.AllValues));
+
+        var response = await client.SendAsync(request);
+
+        if (!response.IsSuccessful() || response.Content is null)
+        {
+            throw new UsosIntegrationException(response.Error!.Message);
+        }
+
+        var formReader = new FormReader(response.Content.AsString());
+        var form = formReader.ReadForm();
+
+        return new RequestToken(form["oauth_token"]!, form["oauth_token_secret"]!);
+    }
+
+    public async Task<AccessToken> RetrieveAccessToken(string token, string tokenSecret, string verifier)
+    {
+        var request = Request.AccessToken("services/oauth/access_token", token, tokenSecret, verifier);
+
+        var response = await client.SendAsync(request);
+
+        if (!response.IsSuccessful() || response.Content is null)
+        {
+            throw new UsosIntegrationException(response.Error!.Message);
+        }
+
+        var formReader = new FormReader(response.Content.AsString());
+        var form = formReader.ReadForm();
+
+        return new AccessToken(form["oauth_token"]!, form["oauth_token_secret"]!);
+    }
+
+    public async Task<StudentDto> GetStudent(string? id = null)
+    {
+        var request = Request.Get("services/users/user")
+            .WithQueryParameter("fields",
+                "id|first_name|last_name|sex|student_status|email|phone_numbers|mobile_numbers|photo_urls|student_number|pesel|birth_date|citizenship|student_programmes|postal_addresses|library_card_id");
+
+        if (id is not null)
+        {
+            request.WithQueryParameter("user_id", id);
+        }
+
+        var response = await client.SendAsync(request);
+
+        if (!response.IsSuccessful())
+        {
+            throw new UsosIntegrationException(response.Error!.Message);
+        }
+
+        return response.Content!.As<StudentDto>();
+    }
+
+    public async Task<IDictionary<string, IDictionary<string, TermCourseDto>>> GetGradesForTerm(string term)
+    {
+        var request = Request.Get("services/grades/terms2")
+            .WithQueryParameter("term_ids", term)
+            .WithQueryParameter("fields", "value_symbol|passes|value_description|exam_id|exam_session_number|counts_into_average|comment|grade_type_id|date_modified|date_acquisition|modification_author");
+
+        var response = await client.SendAsync(request);
+
+        if (!response.IsSuccessful())
+        {
+            throw new UsosIntegrationException(response.Error!.Message);
+        }
+
+        return response.Content!.As<IDictionary<string, IDictionary<string, TermCourseDto>>>();
+    }
+
+    public async Task<GradesDistributionDto> GetExamGradesDistribution(string examId)
+    {
+        var request = Request.Get("services/examrep/exam")
+            .WithQueryParameter("id", examId)
+            .WithQueryParameter("fields", "grades_distribution");
+
+        var response = await client.SendAsync(request);
+
+        if (!response.IsSuccessful())
+        {
+            throw new UsosIntegrationException(response.Error!.Message);
+        }
+
+        return response.Content!.As<GradesDistributionDto>();
+    }
+
+    public async Task<CourseDto> GetCourse(string id)
+    {
+        var request = Request.Get("services/courses/course")
+            .WithQueryParameter("course_id", id);
+
+        var response = await client.SendAsync(request);
+
+        if (!response.IsSuccessful())
+        {
+            throw new UsosIntegrationException(response.Error!.Message);
+        }
+
+        return response.Content!.As<CourseDto>();
+    }
+
+    public async Task<CourseUnitDto> GetCourseUnit(string id)
+    {
+        var request = Request.Get("services/courses/unit")
+            .WithQueryParameter("unit_id", id)
+            .WithQueryParameter("fields", "id|classtype_id");
+
+        var response = await client.SendAsync(request);
+
+        if (!response.IsSuccessful())
+        {
+            throw new UsosIntegrationException(response.Error!.Message);
+        }
+
+        return response.Content!.As<CourseUnitDto>();
+    }
+
+    public async Task<IDictionary<string, ClassTypeDto>> GetClassTypes()
+    {
+        var request = Request.Get("services/courses/classtypes_index");
+
+        var response = await client.SendAsync(request);
+
+        if (!response.IsSuccessful())
+        {
+            throw new UsosIntegrationException(response.Error!.Message);
+        }
+
+        return response.Content!.As<IDictionary<string, ClassTypeDto>>();
+    }
+}

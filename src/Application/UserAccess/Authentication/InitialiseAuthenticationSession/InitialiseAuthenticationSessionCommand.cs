@@ -1,0 +1,5 @@
+using App.Application.Contracts;
+
+namespace App.Application.UserAccess.Authentication.InitialiseAuthenticationSession;
+
+public class InitialiseAuthenticationSessionCommand : CommandBase<AuthenticationSessionInitialisationResult>;
