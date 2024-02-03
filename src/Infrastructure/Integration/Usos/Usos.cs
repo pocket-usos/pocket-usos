@@ -5,11 +5,12 @@ using App.Infrastructure.Integration.Requests;
 using App.Infrastructure.Integration.Usos.Courses;
 using App.Infrastructure.Integration.Usos.Grades;
 using App.Infrastructure.Integration.Usos.Students;
+using App.Infrastructure.Integration.Usos.TimeTable;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace App.Infrastructure.Integration.Usos;
 
-internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProvider, IGradesProvider, ICoursesProvider
+internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProvider, IGradesProvider, ICoursesProvider, ITimeTableProvider
 {
     public async Task<RequestToken> RetrieveRequestToken()
     {
@@ -173,5 +174,24 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
         }
 
         return response.Content!.As<UserCoursesDto>();
+    }
+
+    public async Task<IEnumerable<TimeTableItemDto>> GetUserTimeTable(DateOnly? start, int? days)
+    {
+        var request = Request.Get("services/tt/user")
+            .WithQueryParameter("fields",
+                "start_time|end_time|name|course_id|course_name|classtype_id|classtype_name|lecturer_ids|group_number|building_name|building_id|room_number|room_id|unit_id|classtype_id|cgwm_id|frequency");
+
+        if (start is not null) request.WithQueryParameter("start", start.Value.ToString("yyyy-MM-dd"));
+        if (days is not null) request.WithQueryParameter("days", days.Value.ToString());
+
+        var response = await client.SendAsync(request);
+
+        if (!response.IsSuccessful())
+        {
+            throw new UsosIntegrationException(response.Error!.Message);
+        }
+
+        return response.Content!.As<IEnumerable<TimeTableItemDto>>();
     }
 }

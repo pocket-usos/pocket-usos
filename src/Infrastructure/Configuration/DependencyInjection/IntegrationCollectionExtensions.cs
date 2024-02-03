@@ -6,6 +6,7 @@ using App.Infrastructure.Integration.Usos;
 using App.Infrastructure.Integration.Usos.Courses;
 using App.Infrastructure.Integration.Usos.Grades;
 using App.Infrastructure.Integration.Usos.Students;
+using App.Infrastructure.Integration.Usos.TimeTable;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
@@ -35,6 +36,7 @@ public static class IntegrationCollectionExtensions
         services.AddScoped<IUsersProvider, Usos>();
         services.AddScoped<IGradesProvider, Usos>();
         services.AddScoped<ICoursesProvider, Usos>();
+        services.AddScoped<ITimeTableProvider, Usos>();
 
         return services;
     }
