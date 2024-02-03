@@ -33,13 +33,14 @@ public class Program
         builder.Services.AddSingleton<IExecutionContextAccessor, ExecutionContextAccessor>();
 
         builder.Services.AddLocalization();
+        builder.Services.AddMemoryCache();
         builder.Services.AddDistributedMemoryCache();
         // builder.Services.AddSingleton<ILocalizerFactory, JsonStringLocalizerFactory>();
 
         // builder.Services.AddProblemDetails(x =>
         // {
         // });
-        
+
         builder.Services.AddApplicationServices(builder.Configuration);
 
         var app = builder.Build();

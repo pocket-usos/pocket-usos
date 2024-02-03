@@ -7,4 +7,6 @@ public interface ICoursesProvider
     public Task<CourseUnitDto> GetCourseUnit(string id);
 
     public Task<IDictionary<string, ClassTypeDto>> GetClassTypes();
+
+    public Task<UserCoursesDto> GetUserCourses();
 }

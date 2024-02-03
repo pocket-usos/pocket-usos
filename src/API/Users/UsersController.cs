@@ -1,14 +1,14 @@
 using App.Application.Contracts;
-using App.Application.Students.GetMyProfile;
-using App.Application.Students.GetStudent;
-using App.Domain.Students;
+using App.Application.Users.GetMyProfile;
+using App.Application.Users.GetUser;
+using App.Domain.Users;
 using Microsoft.AspNetCore.Mvc;
 
-namespace App.API.Students;
+namespace App.API.Users;
 
 [ApiController]
 [Route("students")]
-public class StudentsController(IGateway gateway) : ControllerBase
+public class UsersController(IGateway gateway) : ControllerBase
 {
     [HttpGet("me")]
     [ProducesResponseType(typeof(Profile), StatusCodes.Status200OK)]
@@ -21,9 +21,9 @@ public class StudentsController(IGateway gateway) : ControllerBase
 
     [HttpGet("{studentId}")]
     [ProducesResponseType(typeof(Profile), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetStudent(string studentId)
+    public async Task<IActionResult> GetUser(string studentId)
     {
-        var student = await gateway.ExecuteQueryAsync(new GetStudentQuery(studentId));
+        var student = await gateway.ExecuteQueryAsync(new GetUserQuery(studentId));
 
         return Ok(student);
     }

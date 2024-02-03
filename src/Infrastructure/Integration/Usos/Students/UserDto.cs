@@ -1,8 +1,8 @@
-using App.Domain.Students;
+using App.Domain.Users;
 
 namespace App.Infrastructure.Integration.Usos.Students;
 
-public class StudentDto
+public class UserDto
 {
     public required string Id { get; set; }
 
@@ -39,7 +39,7 @@ public class StudentDto
             Id = Id,
             FirstName = FirstName,
             LastName = LastName,
-            Status = App.Domain.Students.StudentStatus.From(StudentStatus).Value,
+            Status = UserStatus.From(StudentStatus).Value,
             Email = Email!,
             Pesel = Pesel!,
             BirthDate = BirthDate!.Value,
@@ -53,14 +53,14 @@ public class StudentDto
         };
     }
 
-    public Student ToStudent()
+    public User ToUser()
     {
-        return new Student
+        return new User
         {
             Id = Id,
             FirstName = FirstName,
             LastName = LastName,
-            Status = App.Domain.Students.StudentStatus.From(StudentStatus).Value,
+            Status = UserStatus.From(StudentStatus).Value,
             Sex = Sex,
             PhotoUrl = PhotoUrls.Select(photo => photo.Value).ToArray()[0],
         };

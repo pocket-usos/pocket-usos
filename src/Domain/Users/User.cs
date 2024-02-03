@@ -1,6 +1,6 @@
-namespace App.Domain.Students;
+namespace App.Domain.Users;
 
-public class Student
+public class User
 {
     public string Id { get; set; }
 

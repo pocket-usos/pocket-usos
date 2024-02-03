@@ -1,6 +1,6 @@
 using App.Application.Contracts;
-using App.Domain.Students;
+using App.Domain.Users;
 
-namespace App.Application.Students.GetMyProfile;
+namespace App.Application.Users.GetMyProfile;
 
 public class GetMyProfileQuery : QueryBase<Profile>;

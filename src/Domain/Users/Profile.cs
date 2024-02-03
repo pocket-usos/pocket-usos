@@ -1,4 +1,4 @@
-namespace App.Domain.Students;
+namespace App.Domain.Users;
 
 public class Profile
 {

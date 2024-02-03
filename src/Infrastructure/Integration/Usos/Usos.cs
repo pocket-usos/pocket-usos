@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace App.Infrastructure.Integration.Usos;
 
-internal class Usos(IUsosHttpClient client) : IAuthenticationService, IStudentsProvider, IGradesProvider, ICoursesProvider
+internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProvider, IGradesProvider, ICoursesProvider
 {
     public async Task<RequestToken> RetrieveRequestToken()
     {
@@ -46,7 +46,7 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IStudentsP
         return new AccessToken(form["oauth_token"]!, form["oauth_token_secret"]!);
     }
 
-    public async Task<StudentDto> GetStudent(string? id = null)
+    public async Task<UserDto> GetUser(string? id = null)
     {
         var request = Request.Get("services/users/user")
             .WithQueryParameter("fields",
@@ -64,7 +64,23 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IStudentsP
             throw new UsosIntegrationException(response.Error!.Message);
         }
 
-        return response.Content!.As<StudentDto>();
+        return response.Content!.As<UserDto>();
+    }
+
+    public async Task<IDictionary<string, UserDto>> GetMultipleUsers(string[] ids)
+    {
+        var request = Request.Get("services/users/users")
+            .WithQueryParameter("fields", "id|first_name|last_name|sex|student_status|email|phone_numbers|mobile_numbers|photo_urls|student_number|pesel|birth_date|citizenship|student_programmes|postal_addresses|library_card_id")
+            .WithQueryParameter("user_ids", String.Join('|', ids));
+
+        var response = await client.SendAsync(request);
+
+        if (!response.IsSuccessful())
+        {
+            throw new UsosIntegrationException(response.Error!.Message);
+        }
+
+        return response.Content!.As<IDictionary<string, UserDto>>();
     }
 
     public async Task<IDictionary<string, IDictionary<string, TermCourseDto>>> GetGradesForTerm(string term)
@@ -142,5 +158,20 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IStudentsP
         }
 
         return response.Content!.As<IDictionary<string, ClassTypeDto>>();
+    }
+
+    public async Task<UserCoursesDto> GetUserCourses()
+    {
+        var request = Request.Get("services/courses/user")
+            .WithQueryParameter("fields", "course_editions|terms");
+
+        var response = await client.SendAsync(request);
+
+        if (!response.IsSuccessful())
+        {
+            throw new UsosIntegrationException(response.Error!.Message);
+        }
+
+        return response.Content!.As<UserCoursesDto>();
     }
 }

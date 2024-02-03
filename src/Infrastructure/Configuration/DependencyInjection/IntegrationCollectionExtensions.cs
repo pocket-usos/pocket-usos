@@ -32,7 +32,7 @@ public static class IntegrationCollectionExtensions
         services.AddScoped<AuthenticationHeaderProvider>();
 
         services.AddScoped<IAuthenticationService, Usos>();
-        services.AddScoped<IStudentsProvider, Usos>();
+        services.AddScoped<IUsersProvider, Usos>();
         services.AddScoped<IGradesProvider, Usos>();
         services.AddScoped<ICoursesProvider, Usos>();
 
