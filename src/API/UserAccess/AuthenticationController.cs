@@ -15,16 +15,16 @@ public class AuthenticationController(IGateway gateway) : ControllerBase
     public async Task<IActionResult> InitialiseSession()
     {
         var result = await gateway.ExecuteCommandAsync(new InitialiseAuthenticationSessionCommand());
-        
+
         return Ok(result);
     }
-    
+
     [HttpPatch("sessions/{sessionId}")]
-    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Authenticate(Guid sessionId, AuthenticateRequest request)
     {
         await gateway.ExecuteCommandAsync(new AuthenticateCommand(sessionId, request.RequestToken, request.Verifier));
-        
+
         return Ok();
     }
 }

@@ -32,7 +32,7 @@ public class GradesRepository(IGradesProvider gradesProvider, ICourseRepository 
                         var sessionGrade = CreateSessionGrade(sessionNumber, grade);
                         termCourseUnit.Grades.Add(sessionGrade);
 
-                        if (sessionGrade.CountsIntoAverage && decimal.TryParse(sessionGrade.Grade, out var decimalGrade))
+                        if (sessionGrade.CountsIntoAverage && decimal.TryParse(sessionGrade.Grade.Replace(",", "."), out var decimalGrade))
                         {
                             gradesToCalculateAverage.Add(decimalGrade);
                         }
@@ -49,7 +49,7 @@ public class GradesRepository(IGradesProvider gradesProvider, ICourseRepository 
 
         if (gradesToCalculateAverage.Count > 0)
         {
-            termGrades.AverageGrade = gradesToCalculateAverage.Sum() / gradesToCalculateAverage.Count;
+            termGrades.AverageGrade = Math.Round(gradesToCalculateAverage.Sum() / gradesToCalculateAverage.Count, 2);
         }
 
         return termGrades;

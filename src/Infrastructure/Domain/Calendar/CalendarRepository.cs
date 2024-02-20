@@ -1,11 +1,12 @@
 using App.Domain.Calendar;
 using App.Domain.Courses;
 using App.Domain.Users;
+using App.Infrastructure.Integration.Usos.Terms;
 using App.Infrastructure.Integration.Usos.TimeTable;
 
 namespace App.Infrastructure.Domain.Calendar;
 
-public class CalendarRepository(ITimeTableProvider timeTableProvider, IUserRepository userRepository) : ICalendarRepository
+public class CalendarRepository(ITimeTableProvider timeTableProvider, IUserRepository userRepository, ITermsProvider termsProvider) : ICalendarRepository
 {
     public async Task<IEnumerable<CalendarItem>> GetCalendar(DateOnly? start, int? days)
     {
@@ -43,5 +44,18 @@ public class CalendarRepository(ITimeTableProvider timeTableProvider, IUserRepos
         }
 
         return calendar;
+    }
+
+    public async Task<IEnumerable<Term>> GetTerms()
+    {
+        var terms = await termsProvider.GetTerms();
+
+        return terms.Terms.Select(term => new Term
+        {
+            Id = term.Id,
+            Name = term.Name["pl"],
+            StartDate = DateOnly.Parse(term.StartDate),
+            EndDate = DateOnly.Parse(term.EndDate)
+        });
     }
 }

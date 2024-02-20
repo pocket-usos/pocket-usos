@@ -5,12 +5,13 @@ using App.Infrastructure.Integration.Requests;
 using App.Infrastructure.Integration.Usos.Courses;
 using App.Infrastructure.Integration.Usos.Grades;
 using App.Infrastructure.Integration.Usos.Students;
+using App.Infrastructure.Integration.Usos.Terms;
 using App.Infrastructure.Integration.Usos.TimeTable;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace App.Infrastructure.Integration.Usos;
 
-internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProvider, IGradesProvider, ICoursesProvider, ITimeTableProvider
+internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProvider, IGradesProvider, ICoursesProvider, ITimeTableProvider, ITermsProvider
 {
     public async Task<RequestToken> RetrieveRequestToken()
     {
@@ -193,5 +194,20 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
         }
 
         return response.Content!.As<IEnumerable<TimeTableItemDto>>();
+    }
+
+    public async Task<TermsDto> GetTerms()
+    {
+        var request = Request.Get("services/courses/user")
+            .WithQueryParameter("fields", "terms");
+
+        var response = await client.SendAsync(request);
+
+        if (!response.IsSuccessful())
+        {
+            throw new UsosIntegrationException(response.Error!.Message);
+        }
+
+        return response.Content!.As<TermsDto>();
     }
 }

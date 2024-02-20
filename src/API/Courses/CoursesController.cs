@@ -12,10 +12,10 @@ public class CoursesController(IGateway gateway) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<Course>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetTermGrades([FromQuery] GetTermCoursesRequest request)
+    public async Task<IActionResult> GetCoursesForTerm([FromQuery] GetTermCoursesRequest request)
     {
-        var termGrades = await gateway.ExecuteQueryAsync(new GetCoursesForTermQuery(request.Term));
+        var courses = await gateway.ExecuteQueryAsync(new GetCoursesForTermQuery(request.Term));
 
-        return Ok(termGrades);
+        return Ok(courses);
     }
 }

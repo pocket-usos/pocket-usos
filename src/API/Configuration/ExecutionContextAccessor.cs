@@ -12,7 +12,7 @@ public class ExecutionContextAccessor(IHttpContextAccessor httpContextAccessor) 
         get
         {
             if (IsAvailable && httpContextAccessor.HttpContext!.Request.Headers.Keys.Any(
-                    x => x == SessionIdHeaderName))
+                    x => x.ToLower() == SessionIdHeaderName.ToLower()))
             {
                 return Guid.Parse(httpContextAccessor.HttpContext.Request.Headers[SessionIdHeaderName].ToString());
             }
