@@ -23,6 +23,17 @@ public class AuthenticationSessionRepository(Context context) : IAuthenticationS
         return session;
     }
 
+    public async Task RemoveAsync(AuthenticationSessionId authenticationSessionId)
+    {
+        var authenticationSession = await context.AuthenticationSessions.FindAsync(authenticationSessionId);
+        if (authenticationSession is null)
+        {
+            return;
+        }
+
+        context.Remove(authenticationSession);
+    }
+
     public async Task SaveAsync()
     {
         await context.SaveChangesAsync();
