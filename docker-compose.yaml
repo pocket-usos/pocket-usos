@@ -5,7 +5,7 @@ services:
     container_name: pocket-usos-database
     image: postgres:15-alpine
     ports:
-      - "5555:5432"
+      - "5532:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pass}
