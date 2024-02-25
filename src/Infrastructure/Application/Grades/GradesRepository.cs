@@ -1,4 +1,4 @@
-using App.Domain.Courses;
+using App.Application.Courses;
 using App.Domain.Grades;
 using App.Infrastructure.Integration.Usos.Grades;
 

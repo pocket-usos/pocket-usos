@@ -9,4 +9,6 @@ public interface ICoursesProvider
     public Task<IDictionary<string, ClassTypeDto>> GetClassTypes();
 
     public Task<UserCoursesDto> GetUserCourses();
+
+    public Task<CourseScheduleItemDto[]> GetCourseSchedule(string courseUnitId, int groupNumber);
 }

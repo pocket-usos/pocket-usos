@@ -55,4 +55,25 @@ public class UserRepository(IUsersProvider usersProvider, IMemoryCache cache) : 
 
         return users;
     }
+
+    public async Task<IDictionary<string, string>> GetUsersPhotosAsync(string[] usersIds)
+    {
+        var usersIdsChunks = usersIds.Select((id, index) => new { Value = id, Index = index })
+            .GroupBy(x => x.Index / 50)
+            .Select(x => x.Select(y => y.Value).ToArray())
+            .ToArray();
+
+        var usersPhotos = new Dictionary<string, string>();
+
+        foreach (var userIdsChunk in usersIdsChunks)
+        {
+            var users = await GetMultipleAsync(userIdsChunk);
+            foreach (var user in users)
+            {
+                usersPhotos[user.Id] = user.PhotoUrl;
+            }
+        }
+
+        return usersPhotos;
+    }
 }

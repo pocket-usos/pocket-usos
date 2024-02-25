@@ -1,7 +1,7 @@
 using App.API.Courses.Requests;
 using App.Application.Contracts;
+using App.Application.Courses;
 using App.Application.Courses.GetCoursesForTerm;
-using App.Domain.Courses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.API.Courses;
@@ -11,7 +11,7 @@ namespace App.API.Courses;
 public class CoursesController(IGateway gateway) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<Course>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<CourseDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetCoursesForTerm([FromQuery] GetTermCoursesRequest request)
     {
         var courses = await gateway.ExecuteQueryAsync(new GetCoursesForTermQuery(request.Term));

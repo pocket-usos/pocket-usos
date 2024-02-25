@@ -177,6 +177,22 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
         return response.Content!.As<UserCoursesDto>();
     }
 
+    public async Task<CourseScheduleItemDto[]> GetCourseSchedule(string courseUnitId, int groupNumber)
+    {
+        var request = Request.Get("services/tt/classgroup_dates2")
+            .WithQueryParameter("unit_id", courseUnitId)
+            .WithQueryParameter("group_number", groupNumber);
+
+        var response = await client.SendAsync(request);
+
+        if (!response.IsSuccessful())
+        {
+            throw new UsosIntegrationException(response.Error!.Message);
+        }
+
+        return response.Content!.As<CourseScheduleItemDto[]>();
+    }
+
     public async Task<IEnumerable<TimeTableItemDto>> GetUserTimeTable(DateOnly? start, int? days)
     {
         var request = Request.Get("services/tt/user")

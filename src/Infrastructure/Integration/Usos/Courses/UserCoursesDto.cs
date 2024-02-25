@@ -26,6 +26,12 @@ public class UserGroupDto
 
     public required string ClassTypeId { get; set; }
 
+    public required string CourseId { get; set; }
+
+    public required IDictionary<string, string> CourseName { get; set; }
+
+    public required string TermId { get; set; }
+
     public required string CourseLangId { get; set; }
 
     public required LecturerDto[] Lecturers { get; set; }

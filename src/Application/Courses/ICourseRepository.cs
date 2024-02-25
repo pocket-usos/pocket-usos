@@ -1,4 +1,6 @@
-namespace App.Domain.Courses;
+using App.Domain.Courses;
+
+namespace App.Application.Courses;
 
 public interface ICourseRepository
 {
@@ -6,5 +8,5 @@ public interface ICourseRepository
 
     public Task<CourseUnit> GetCourseUnit(string id);
 
-    public Task<List<Course>> GetMyCoursesForTerm(string termId);
+    public Task<List<CourseDto>> GetMyCoursesForTerm(string termId);
 }

@@ -7,4 +7,6 @@ public interface IUserRepository
     Task<User> GetByIdAsync(string id);
 
     Task<List<User>> GetMultipleAsync(string[] ids);
+
+    Task<IDictionary<string, string>> GetUsersPhotosAsync(string[] usersIds);
 }

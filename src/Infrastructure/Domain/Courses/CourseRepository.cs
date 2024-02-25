@@ -1,10 +1,12 @@
+using App.Application.Courses;
 using App.Domain.Courses;
-using App.Domain.Users;
 using App.Infrastructure.Integration.Usos.Courses;
+using CourseDto = App.Application.Courses.CourseDto;
+using LecturerDto = App.Application.Courses.LecturerDto;
 
 namespace App.Infrastructure.Domain.Courses;
 
-public class CourseRepository(ICoursesProvider coursesProvider, IUserRepository userRepository) : ICourseRepository
+public class CourseRepository(ICoursesProvider coursesProvider) : ICourseRepository
 {
     public async Task<Course> GetCourse(string id)
     {
@@ -23,73 +25,50 @@ public class CourseRepository(ICoursesProvider coursesProvider, IUserRepository 
         return new CourseUnit(courseUnit.Id, classType);
     }
 
-    public async Task<List<Course>> GetMyCoursesForTerm(string termId)
+    public async Task<List<CourseDto>> GetMyCoursesForTerm(string termId)
     {
         var userCourses = await coursesProvider.GetUserCourses();
         var termCourses = userCourses.CourseEditions[termId];
 
-        var courses = new List<Course>();
+        var courses = new List<CourseDto>();
         foreach (var courseEdition in termCourses)
         {
-            var course = new Course(courseEdition.CourseId, courseEdition.CourseName["pl"]);
-            course.Language = courseEdition.UserGroups.FirstOrDefault()?.CourseLangId;
-            course.Term = termId;
-
             foreach (var userGroup in courseEdition.UserGroups)
             {
-                var lecturers = await GetLecturers(userGroup);
-                var participants = await GetParticipants(userGroup);
-
-                course.Groups.Add(new CourseGroup
+                var lecturers = userGroup.Lecturers.Select(lecturer => new LecturerDto
                 {
-                    Number = userGroup.GroupNumber,
-                    ClassType = new ClassType(userGroup.ClassTypeId, userGroup.ClassType["pl"]),
+                    Id = lecturer.Id,
+                    FirstName = lecturer.FirstName,
+                    LastName = lecturer.LastName,
+                }).ToList();
+
+                var courseSchedule = await coursesProvider.GetCourseSchedule(userGroup.CourseUnitId, userGroup.GroupNumber);
+                var schedule = new ScheduleDto
+                {
+                    Items = courseSchedule.Select(s => new ScheduleItemDto
+                    {
+                        Start = DateTime.Parse(s.StartTime),
+                        End = DateTime.Parse(s.EndTime),
+                    }).ToList(),
+                    ClassesCount = courseSchedule.Length,
+                    ClassesCompleted = courseSchedule.Count(s => DateTime.Parse(s.EndTime) < DateTime.Now),
+                };
+
+                courses.Add(new CourseDto
+                {
+                    Id = userGroup.CourseId,
+                    UnitId = userGroup.CourseUnitId,
+                    Name = userGroup.CourseName["pl"],
+                    Term = userGroup.TermId,
+                    GroupNumber = userGroup.GroupNumber,
+                    ClassType = new ClassType(userGroup.ClassTypeId,
+                        userGroup.ClassType["pl"]),
                     Lecturers = lecturers,
-                    Participants = participants
+                    Schedule = schedule,
                 });
             }
-
-            courses.Add(course);
         }
 
         return courses;
-    }
-
-    private async Task<List<Lecturer>> GetLecturers(UserGroupDto userGroup)
-    {
-        var userIds = userGroup.Lecturers.Select(l => l.Id).ToArray();
-        var users = await userRepository.GetMultipleAsync(userIds);
-
-        return users.Select(u => new Lecturer
-        {
-            Id = u.Id,
-            FirstName = u.FirstName,
-            LastName = u.LastName,
-            PhotoUrl = u.PhotoUrl
-        }).ToList();
-    }
-
-    private async Task<List<Participant>> GetParticipants(UserGroupDto userGroup)
-    {
-        var userIds = userGroup.Participants.Select(l => l.Id).ToArray();
-        var userIdsChunks = userIds.Select((id, index) => new { Value = id, Index = index })
-            .GroupBy(x => x.Index / 50)
-            .Select(x => x.Select(y => y.Value).ToArray())
-            .ToArray();
-
-        var participants = new List<Participant>();
-        foreach (var userIdsChunk in userIdsChunks)
-        {
-            var users = await userRepository.GetMultipleAsync(userIdsChunk);
-            participants.AddRange(users.Select(u => new Participant
-            {
-                Id = u.Id,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                PhotoUrl = u.PhotoUrl
-            }));
-        }
-
-        return participants;
     }
 }
