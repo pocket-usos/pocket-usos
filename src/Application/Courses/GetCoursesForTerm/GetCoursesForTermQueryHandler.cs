@@ -6,6 +6,6 @@ public class GetCoursesForTermQueryHandler(ICourseRepository courseRepository) :
 {
     public async Task<IEnumerable<CourseDto>> Handle(GetCoursesForTermQuery query, CancellationToken cancellationToken)
     {
-        return await courseRepository.GetMyCoursesForTerm(query.Term);
+        return await courseRepository.GetMyCoursesForTerm(query.Term, query.WithSchedule);
     }
 }

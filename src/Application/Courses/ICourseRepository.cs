@@ -8,5 +8,5 @@ public interface ICourseRepository
 
     public Task<CourseUnit> GetCourseUnit(string id);
 
-    public Task<List<CourseDto>> GetMyCoursesForTerm(string termId);
+    public Task<List<CourseDto>> GetMyCoursesForTerm(string termId, bool withSchedule = false);
 }

@@ -32,9 +32,9 @@ public class UsersController(IGateway gateway) : ControllerBase
 
     [HttpGet("photos")]
     [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetUsersPhotos(GetUsersPhotosRequest request)
+    public async Task<IActionResult> GetUsersPhotos([FromQuery] GetUsersPhotosRequest request)
     {
-        var photos = await gateway.ExecuteQueryAsync(new GetUsersPhotosQuery(request.UsersIds));
+        var photos = await gateway.ExecuteQueryAsync(new GetUsersPhotosQuery(request.UsersIds.Split(',')));
 
         return Ok(photos);
     }

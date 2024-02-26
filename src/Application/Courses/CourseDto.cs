@@ -16,7 +16,7 @@ public class CourseDto
 
     public required ClassType ClassType { get; set; }
 
-    public required ScheduleDto Schedule { get; set; }
+    public ScheduleDto? Schedule { get; set; }
 
     public required List<LecturerDto> Lecturers { get; set; }
 

@@ -14,7 +14,7 @@ public class CoursesController(IGateway gateway) : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<CourseDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetCoursesForTerm([FromQuery] GetTermCoursesRequest request)
     {
-        var courses = await gateway.ExecuteQueryAsync(new GetCoursesForTermQuery(request.Term));
+        var courses = await gateway.ExecuteQueryAsync(new GetCoursesForTermQuery(request.Term, request.WithSchedule));
 
         return Ok(courses);
     }

@@ -2,5 +2,5 @@ namespace App.API.Users.Requests;
 
 public class GetUsersPhotosRequest
 {
-    public string[] UsersIds { get; set; }
+    public string UsersIds { get; set; }
 }

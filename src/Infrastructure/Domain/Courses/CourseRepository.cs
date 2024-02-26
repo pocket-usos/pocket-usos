@@ -25,7 +25,7 @@ public class CourseRepository(ICoursesProvider coursesProvider) : ICourseReposit
         return new CourseUnit(courseUnit.Id, classType);
     }
 
-    public async Task<List<CourseDto>> GetMyCoursesForTerm(string termId)
+    public async Task<List<CourseDto>> GetMyCoursesForTerm(string termId, bool withSchedule = false)
     {
         var userCourses = await coursesProvider.GetUserCourses();
         var termCourses = userCourses.CourseEditions[termId];
@@ -42,17 +42,21 @@ public class CourseRepository(ICoursesProvider coursesProvider) : ICourseReposit
                     LastName = lecturer.LastName,
                 }).ToList();
 
-                var courseSchedule = await coursesProvider.GetCourseSchedule(userGroup.CourseUnitId, userGroup.GroupNumber);
-                var schedule = new ScheduleDto
+                ScheduleDto? schedule = null;
+                if (withSchedule)
                 {
-                    Items = courseSchedule.Select(s => new ScheduleItemDto
+                    var courseSchedule = await coursesProvider.GetCourseSchedule(userGroup.CourseUnitId, userGroup.GroupNumber);
+                    schedule = new ScheduleDto
                     {
-                        Start = DateTime.Parse(s.StartTime),
-                        End = DateTime.Parse(s.EndTime),
-                    }).ToList(),
-                    ClassesCount = courseSchedule.Length,
-                    ClassesCompleted = courseSchedule.Count(s => DateTime.Parse(s.EndTime) < DateTime.Now),
-                };
+                        Items = courseSchedule.Select(s => new ScheduleItemDto
+                        {
+                            Start = DateTime.Parse(s.StartTime),
+                            End = DateTime.Parse(s.EndTime),
+                        }).ToList(),
+                        ClassesCount = courseSchedule.Length,
+                        ClassesCompleted = courseSchedule.Count(s => DateTime.Parse(s.EndTime) < DateTime.Now),
+                    };
+                }
 
                 courses.Add(new CourseDto
                 {
