@@ -3,6 +3,7 @@ using App.Domain.Courses;
 using App.Infrastructure.Integration.Usos.Courses;
 using CourseDto = App.Application.Courses.CourseDto;
 using LecturerDto = App.Application.Courses.LecturerDto;
+using ParticipantDto = App.Application.Courses.ParticipantDto;
 
 namespace App.Infrastructure.Domain.Courses;
 
@@ -69,6 +70,12 @@ public class CourseRepository(ICoursesProvider coursesProvider) : ICourseReposit
                         userGroup.ClassType["pl"]),
                     Lecturers = lecturers,
                     Schedule = schedule,
+                    Participants = userGroup.Participants.Select(p => new ParticipantDto
+                    {
+                        Id = p.Id,
+                        FirstName = p.FirstName,
+                        LastName = p.LastName
+                    }).ToList(),
                 });
             }
         }

@@ -52,7 +52,7 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
     {
         var request = Request.Get("services/users/user")
             .WithQueryParameter("fields",
-                "id|first_name|last_name|sex|student_status|email|phone_numbers|mobile_numbers|photo_urls|student_number|pesel|birth_date|citizenship|student_programmes|postal_addresses|library_card_id");
+                "id|first_name|last_name|sex|student_status|email|phone_numbers|mobile_numbers|photo_urls|student_number|pesel|birth_date|citizenship|student_programmes|postal_addresses|library_card_id|titles");
 
         if (id is not null)
         {

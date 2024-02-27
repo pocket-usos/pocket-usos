@@ -2,6 +2,7 @@ using App.API.Users.Requests;
 using App.Application.Contracts;
 using App.Application.Users.GetMyProfile;
 using App.Application.Users.GetUser;
+using App.Application.Users.GetUsers;
 using App.Application.Users.GetUsersPhotos;
 using App.Domain.Users;
 using Microsoft.AspNetCore.Mvc;
@@ -21,13 +22,22 @@ public class UsersController(IGateway gateway) : ControllerBase
         return Ok(profile);
     }
 
-    [HttpGet("{studentId}")]
-    [ProducesResponseType(typeof(Profile), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetUser(string studentId)
+    [HttpGet("{userId}")]
+    [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetUser(string userId)
     {
-        var student = await gateway.ExecuteQueryAsync(new GetUserQuery(studentId));
+        var user = await gateway.ExecuteQueryAsync(new GetUserQuery(userId));
 
-        return Ok(student);
+        return Ok(user);
+    }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(User[]), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetUsers([FromQuery] GetUsersRequest request)
+    {
+        var users = await gateway.ExecuteQueryAsync(new GetUsersQuery(request.UsersIds.Split(',')));
+
+        return Ok(users);
     }
 
     [HttpGet("photos")]

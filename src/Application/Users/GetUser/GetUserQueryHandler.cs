@@ -7,6 +7,6 @@ public class GetUserQueryHandler(IUserRepository userRepository) : IQueryHandler
 {
     public async Task<User> Handle(GetUserQuery query, CancellationToken cancellationToken)
     {
-        return await userRepository.GetByIdAsync(query.StudentId);
+        return await userRepository.GetByIdAsync(query.UserId);
     }
 }
