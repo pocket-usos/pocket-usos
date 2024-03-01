@@ -1,5 +1,4 @@
 using App.Application.Configuration.Queries;
-using App.Domain.Grades;
 
 namespace App.Application.Grades.GetTermGrades;
 

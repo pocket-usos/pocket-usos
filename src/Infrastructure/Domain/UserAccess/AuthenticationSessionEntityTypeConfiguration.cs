@@ -10,13 +10,14 @@ public class AuthenticationSessionEntityTypeConfiguration : IEntityTypeConfigura
     {
         builder.ToTable("authentication_sessions");
         builder.HasKey(s => s.Id);
+        builder.Property<AuthenticationSessionId>(s => s.Id).HasColumnName("id");
 
         builder.ComplexProperty<RequestToken>(s => s.RequestToken, b =>
         {
             b.Property<string>(t => t.Value).HasColumnName("request_token");
             b.Property<string>(t => t.Secret).HasColumnName("request_token_secret");
         });
-        
+
         builder.OwnsOne<AccessToken>(s => s.AccessToken, b =>
         {
             b.Property<string>(t => t.Value).HasColumnName("access_token");

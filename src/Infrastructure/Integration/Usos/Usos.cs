@@ -132,11 +132,11 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
         return response.Content!.As<CourseDto>();
     }
 
-    public async Task<CourseUnitDto> GetCourseUnit(string id)
+    public async Task<CourseEditionDto> GetCourseEdition(string courseId, string termId)
     {
-        var request = Request.Get("services/courses/unit")
-            .WithQueryParameter("unit_id", id)
-            .WithQueryParameter("fields", "id|classtype_id");
+        var request = Request.Get("services/courses/course_edition")
+            .WithQueryParameter("course_id", courseId)
+            .WithQueryParameter("term_id", termId);
 
         var response = await client.SendAsync(request);
 
@@ -145,7 +145,43 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
             throw new UsosIntegrationException(response.Error!.Message);
         }
 
-        return response.Content!.As<CourseUnitDto>();
+        return response.Content!.As<CourseEditionDto>();
+    }
+
+    public async Task<string> GetCourseUnitTypeId(string id)
+    {
+        var request = Request.Get("services/courses/unit")
+            .WithQueryParameter("unit_id", id)
+            .WithQueryParameter("fields", "classtype_id");
+
+        var response = await client.SendAsync(request);
+
+        if (!response.IsSuccessful())
+        {
+            throw new UsosIntegrationException(response.Error!.Message);
+        }
+
+        var classTypeId = response.Content!.As<CourseUnitTypeIdDto>();
+
+        return classTypeId.ClasstypeId;
+    }
+
+    public async Task<string> GetCourseUnitTermId(string id)
+    {
+        var request = Request.Get("services/courses/unit")
+            .WithQueryParameter("unit_id", id)
+            .WithQueryParameter("fields", "term_id");
+
+        var response = await client.SendAsync(request);
+
+        if (!response.IsSuccessful())
+        {
+            throw new UsosIntegrationException(response.Error!.Message);
+        }
+
+        var classTypeId = response.Content!.As<CourseUnitTermIdDto>();
+
+        return classTypeId.TermId;
     }
 
     public async Task<IDictionary<string, ClassTypeDto>> GetClassTypes()

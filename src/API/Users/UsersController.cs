@@ -1,10 +1,10 @@
 using App.API.Users.Requests;
 using App.Application.Contracts;
+using App.Application.Users;
 using App.Application.Users.GetMyProfile;
 using App.Application.Users.GetUser;
 using App.Application.Users.GetUsers;
 using App.Application.Users.GetUsersPhotos;
-using App.Domain.Users;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.API.Users;

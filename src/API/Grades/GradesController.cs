@@ -1,7 +1,7 @@
 using App.API.Grades.Requests;
 using App.Application.Contracts;
+using App.Application.Grades;
 using App.Application.Grades.GetTermGrades;
-using App.Domain.Grades;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.API.Grades;

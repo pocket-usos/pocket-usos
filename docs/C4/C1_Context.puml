@@ -1,0 +1,25 @@
+@startuml
+!include <C4/C4_Container>
+!define ICONS ./plantuml-icon-font-sprites
+!include ICONS/common.puml
+!include ICONS/font-awesome-5/graduation_cap.puml
+!include ICONS/font-awesome-5/inbox.puml
+!include ICONS/font-awesome-5/university.puml
+!include ICONS/font-awesome-5/network_wired.puml
+!include ICONS/font-awesome-5/chart_line.puml
+
+Person(student, "Student", "Uses 'PocketUSOS' application")
+Person(admin, "Admin", "Monitors and manages 'PocketUSOS' application")
+
+System(app, "PocketUSOS", "Pocket solution for students", $sprite="graduation_cap")
+System_Ext(usos, "USOS Ecosystem", "University study service system", $sprite="network_wired")
+System_Ext(university, "University", "High school that is connected to USOS ecosystem", $sprite="university")
+
+Rel(app, usos, "Gets students data from", "HTTP")
+Rel(university, usos, "Is integrated with", "On-Premise")
+Rel(student, university, "Studies in")
+Rel(student, app, "Uses", "Mobile application")
+Rel(student, usos, "Uses", "Web")
+Rel(admin, app, "Monitors and manages application", "Administration Console")
+
+@enduml

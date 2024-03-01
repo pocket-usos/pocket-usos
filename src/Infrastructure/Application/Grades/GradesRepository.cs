@@ -1,10 +1,11 @@
-using App.Application.Courses;
-using App.Domain.Grades;
+using App.Application.Grades;
+using App.Application.Shared;
+using App.Infrastructure.Integration.Usos.Courses;
 using App.Infrastructure.Integration.Usos.Grades;
 
 namespace App.Infrastructure.Application.Grades;
 
-public class GradesRepository(IGradesProvider gradesProvider, ICourseRepository courseRepository) : IGradesRepository
+public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider coursesProvider) : IGradesRepository
 {
     public async Task<TermGrades> GetGradesForTerm(string term)
     {
@@ -17,12 +18,12 @@ public class GradesRepository(IGradesProvider gradesProvider, ICourseRepository 
         {
             foreach (var (courseId, courseUnits) in courses)
             {
-                var course = await courseRepository.GetCourse(courseId);
+                var course = await GetCourse(courseId);
                 var termCourse = new TermCourse(courseId, course.Name);
 
                 foreach (var (courseUnitId, courseUnitGrades) in courseUnits.CourseUnitsGrades)
                 {
-                    var courseUnit = await courseRepository.GetCourseUnit(courseUnitId);
+                    var courseUnit = await GetCourseUnit(courseUnitId);
                     var termCourseUnit = new TermCourseUnit(courseUnitId, courseUnit.Type);
 
                     foreach (var (sessionNumber, grade) in courseUnitGrades[0])
@@ -92,5 +93,36 @@ public class GradesRepository(IGradesProvider gradesProvider, ICourseRepository 
             }).Where(d => d.Percentage > 0).ToArray();
             termCourseUnit.GradesDistribution = gradesDistribution;
         }
+    }
+
+    private async Task<Course> GetCourse(string id)
+    {
+        var course = await coursesProvider.GetCourse(id);
+
+        return new Course(id, course.Name["pl"]);
+    }
+
+    private async Task<CourseUnit> GetCourseUnit(string id)
+    {
+        var classTypeId = await coursesProvider.GetCourseUnitTypeId(id);
+        var classTypes = await coursesProvider.GetClassTypes();
+        var classTypeDto = classTypes[classTypeId];
+        var classType = new ClassType(classTypeDto.Id, classTypeDto.Name["pl"]);
+
+        return new CourseUnit(id, classType);
+    }
+
+    private class Course(string id, string name)
+    {
+        public string Id { get; set; } = id;
+
+        public string Name { get; set; } = name;
+    }
+
+    private class CourseUnit(string id, ClassType type)
+    {
+        public string Id { get; set; } = id;
+
+        public ClassType Type { get; set; } = type;
     }
 }

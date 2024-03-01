@@ -1,4 +1,4 @@
-using App.Domain.Users;
+using App.Application.Users;
 
 namespace App.Infrastructure.Integration.Usos.Students;
 
