@@ -13,7 +13,7 @@ public class CoursesController(IGateway gateway) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<Course>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetCoursesForTerm([FromQuery] GetTermCoursesRequest request)
+    public async Task<IActionResult> GetCoursesForTerm([FromQuery] GetCoursesForTermRequest request)
     {
         var courses = await gateway.ExecuteQueryAsync(new GetCoursesForTermQuery(request.Term, request.WithSchedule));
 
@@ -22,7 +22,7 @@ public class CoursesController(IGateway gateway) : ControllerBase
 
     [HttpGet("{courseId}")]
     [ProducesResponseType(typeof(Course), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetCoursesForTerm(string courseId, [FromQuery] GetCourseRequest request)
+    public async Task<IActionResult> GetCourse(string courseId, [FromQuery] GetCourseRequest request)
     {
         var course = await gateway.ExecuteQueryAsync(new GetCourseQuery(courseId, request.CourseUnitId));
 

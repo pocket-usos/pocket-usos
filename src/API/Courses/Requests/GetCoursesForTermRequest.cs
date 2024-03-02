@@ -1,6 +1,6 @@
 namespace App.API.Courses.Requests;
 
-public class GetTermCoursesRequest
+public class GetCoursesForTermRequest
 {
     public string Term { get; set; }
 
