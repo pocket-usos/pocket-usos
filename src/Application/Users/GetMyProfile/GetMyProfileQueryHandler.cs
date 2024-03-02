@@ -1,5 +1,4 @@
 using App.Application.Configuration.Queries;
-using App.Domain.Users;
 
 namespace App.Application.Users.GetMyProfile;
 

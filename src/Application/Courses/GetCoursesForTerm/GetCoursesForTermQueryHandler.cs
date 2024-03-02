@@ -1,5 +1,4 @@
 using App.Application.Configuration.Queries;
-using App.Domain.Courses;
 
 namespace App.Application.Courses.GetCoursesForTerm;
 
@@ -7,6 +6,6 @@ public class GetCoursesForTermQueryHandler(ICourseRepository courseRepository) :
 {
     public async Task<IEnumerable<Course>> Handle(GetCoursesForTermQuery query, CancellationToken cancellationToken)
     {
-        return await courseRepository.GetMyCoursesForTerm(query.Term);
+        return await courseRepository.GetMyCoursesForTerm(query.Term, query.WithSchedule);
     }
 }

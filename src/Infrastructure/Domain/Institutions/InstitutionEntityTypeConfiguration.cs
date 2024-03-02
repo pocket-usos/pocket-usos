@@ -10,6 +10,7 @@ public class InstitutionEntityTypeConfiguration : IEntityTypeConfiguration<Insti
     {
         builder.ToTable("institutions");
         builder.HasKey(i => i.Id);
+        builder.Property<InstitutionId>(i => i.Id).HasColumnName("id");
 
         builder.Property<string>(i => i.BaseUrl).HasColumnName("base_url");
         builder.Property(i => i.IsEnabled).HasColumnName("is_enabled");

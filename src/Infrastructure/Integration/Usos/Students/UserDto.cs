@@ -1,4 +1,4 @@
-using App.Domain.Users;
+using App.Application.Users;
 
 namespace App.Infrastructure.Integration.Usos.Students;
 
@@ -17,6 +17,8 @@ public class UserDto
     public string? Email { get; set; }
 
     public string? Pesel { get; set; }
+
+    public IDictionary<string, string?>? Titles { get; set; }
 
     public DateOnly? BirthDate { get; set; }
 
@@ -60,9 +62,11 @@ public class UserDto
             Id = Id,
             FirstName = FirstName,
             LastName = LastName,
+            Email = Email ?? null,
             Status = UserStatus.From(StudentStatus).Value,
             Sex = Sex,
             PhotoUrl = PhotoUrls.Select(photo => photo.Value).ToArray()[0],
+            Title = Titles?["before"],
         };
     }
 }
