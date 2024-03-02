@@ -35,7 +35,6 @@ public class Program
         builder.Services.AddLocalization();
         builder.Services.AddMemoryCache();
         builder.Services.AddDistributedMemoryCache();
-        // builder.Services.AddSingleton<ILocalizerFactory, JsonStringLocalizerFactory>();
 
         // builder.Services.AddProblemDetails(x =>
         // {
