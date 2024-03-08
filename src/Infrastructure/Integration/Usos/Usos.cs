@@ -52,7 +52,7 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
     {
         var request = Request.Get("services/users/user")
             .WithQueryParameter("fields",
-                "id|first_name|last_name|sex|student_status|email|phone_numbers|mobile_numbers|photo_urls|student_number|pesel|birth_date|citizenship|student_programmes|postal_addresses|library_card_id|titles");
+                "id|first_name|last_name|sex|student_status|email|phone_numbers|mobile_numbers|photo_urls|student_number|pesel|birth_date|citizenship|student_programmes|postal_addresses|library_card_id|titles|office_hours|course_editions_conducted");
 
         if (id is not null)
         {
@@ -232,6 +232,26 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
     public async Task<IEnumerable<TimeTableItemDto>> GetUserTimeTable(DateOnly? start, int? days)
     {
         var request = Request.Get("services/tt/user")
+            .WithQueryParameter("fields",
+                "start_time|end_time|name|course_id|course_name|classtype_id|classtype_name|lecturer_ids|group_number|building_name|building_id|room_number|room_id|unit_id|classtype_id|cgwm_id|frequency");
+
+        if (start is not null) request.WithQueryParameter("start", start.Value.ToString("yyyy-MM-dd"));
+        if (days is not null) request.WithQueryParameter("days", days.Value.ToString());
+
+        var response = await client.SendAsync(request);
+
+        if (!response.IsSuccessful())
+        {
+            throw new UsosIntegrationException(response.Error!.Message);
+        }
+
+        return response.Content!.As<IEnumerable<TimeTableItemDto>>();
+    }
+
+    public async Task<IEnumerable<TimeTableItemDto>> GetStaffTimeTable(string userId, DateOnly? start, int? days)
+    {
+        var request = Request.Get("services/tt/staff")
+            .WithQueryParameter("user_id", userId)
             .WithQueryParameter("fields",
                 "start_time|end_time|name|course_id|course_name|classtype_id|classtype_name|lecturer_ids|group_number|building_name|building_id|room_number|room_id|unit_id|classtype_id|cgwm_id|frequency");
 

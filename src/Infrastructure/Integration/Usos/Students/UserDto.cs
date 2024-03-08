@@ -34,6 +34,10 @@ public class UserDto
 
     public required AddressDto[] PostalAddresses { get; set; }
 
+    public IDictionary<string, string>? OfficeHours { get; set; }
+
+    public ConductedCourseEdition[]? CourseEditionsConducted { get; set; }
+
     public Profile ToProfile()
     {
         return new Profile
@@ -67,6 +71,17 @@ public class UserDto
             Sex = Sex,
             PhotoUrl = PhotoUrls.Select(photo => photo.Value).ToArray()[0],
             Title = Titles?["before"],
+            OfficeHoursInformation = OfficeHours?["pl"],
+            Courses = CourseEditionsConducted?.Select(c => new User.ConductedCourse
+            {
+                Id = c.Course.Id,
+                Name = c.Course.Name["pl"],
+                Term = new User.CourseTerm
+                {
+                    Id = c.Term.Id,
+                    Name = c.Term.Name["pl"]
+                }
+            })
         };
     }
 }
@@ -81,4 +96,27 @@ public class AddressDto
     public required string Type { get; set; }
 
     public required string Address { get; set; }
+}
+
+public class ConductedCourseEdition
+{
+    public required string Id { get; set; }
+
+    public required ConductedCourse Course { get; set; }
+
+    public required ConductedCourseTerm Term { get; set; }
+}
+
+public class ConductedCourse
+{
+    public required string Id { get; set; }
+
+    public required IDictionary<string, string> Name { get; set; }
+}
+
+public class ConductedCourseTerm
+{
+    public required string Id { get; set; }
+
+    public required IDictionary<string, string> Name { get; set; }
 }
