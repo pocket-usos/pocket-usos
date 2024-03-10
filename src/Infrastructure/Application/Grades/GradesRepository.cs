@@ -59,6 +59,19 @@ public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider c
 
     private static SessionGrade CreateSessionGrade(string sessionNumber, GradeDto grade, string language)
     {
+        var isModifiedAt = DateTime.TryParse(grade.DateAcquisition, out var modifiedAt);
+
+        GradeAuthor? modifiedBy = null;
+        if (grade.ModificationAuthor is not null)
+        {
+            modifiedBy = new GradeAuthor
+            {
+                Id = grade.ModificationAuthor.Id,
+                FirstName = grade.ModificationAuthor.FirstName,
+                LastName = grade.ModificationAuthor.LastName
+            };
+        }
+
         var sessionGrade = new SessionGrade
         {
             SessionNumber = sessionNumber,
@@ -69,13 +82,8 @@ public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider c
             CountsIntoAverage = grade.CountsIntoAverage == "T",
             Comment = grade.Comment,
             GradeTypeId = grade.GradeTypeId,
-            ModifiedAt = DateTime.Parse(grade.DateModified),
-            ModifiedBy = new GradeAuthor
-            {
-                Id = grade.ModificationAuthor.Id,
-                FirstName = grade.ModificationAuthor.FirstName,
-                LastName = grade.ModificationAuthor.LastName
-            }
+            ModifiedAt = isModifiedAt ? modifiedAt : null,
+            ModifiedBy = modifiedBy,
         };
         return sessionGrade;
     }
