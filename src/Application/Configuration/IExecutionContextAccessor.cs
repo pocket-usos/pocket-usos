@@ -4,7 +4,7 @@ public interface IExecutionContextAccessor
 {
     Guid SessionId { get; }
 
-    string? Language { get; }
+    string Language { get; }
 
     bool IsAvailable { get; }
 }

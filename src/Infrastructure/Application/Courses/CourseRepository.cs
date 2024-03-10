@@ -1,10 +1,11 @@
+using App.Application.Configuration;
 using App.Application.Courses;
 using App.Application.Shared;
 using App.Infrastructure.Integration.Usos.Courses;
 
 namespace App.Infrastructure.Application.Courses;
 
-public class CourseRepository(ICoursesProvider coursesProvider) : ICourseRepository
+public class CourseRepository(ICoursesProvider coursesProvider, IExecutionContextAccessor context) : ICourseRepository
 {
     public async Task<Course> GetCourse(string courseId, string courseUnitId)
     {
@@ -41,10 +42,10 @@ public class CourseRepository(ICoursesProvider coursesProvider) : ICourseReposit
         {
             Id = group.CourseId,
             UnitId = group.CourseUnitId,
-            Name = group.CourseName["pl"],
+            Name = group.CourseName[context.Language],
             Term = group.TermId,
             GroupNumber = group.GroupNumber,
-            ClassType = new ClassType(group.ClassTypeId, group.ClassType["pl"]),
+            ClassType = new ClassType(group.ClassTypeId, group.ClassType[context.Language]),
             Schedule = schedule,
             Lecturers = lecturers,
             Participants = participants
@@ -88,11 +89,11 @@ public class CourseRepository(ICoursesProvider coursesProvider) : ICourseReposit
                 {
                     Id = userGroup.CourseId,
                     UnitId = userGroup.CourseUnitId,
-                    Name = userGroup.CourseName["pl"],
+                    Name = userGroup.CourseName[context.Language],
                     Term = userGroup.TermId,
                     GroupNumber = userGroup.GroupNumber,
                     ClassType = new ClassType(userGroup.ClassTypeId,
-                        userGroup.ClassType["pl"]),
+                        userGroup.ClassType[context.Language]),
                     Lecturers = lecturers,
                     Schedule = schedule,
                     Participants = userGroup.Participants.Select(p => new Participant

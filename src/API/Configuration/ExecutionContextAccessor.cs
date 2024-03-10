@@ -21,16 +21,20 @@ public class ExecutionContextAccessor(IHttpContextAccessor httpContextAccessor) 
         }
     }
 
-    public string? Language
+    public string Language
     {
         get
         {
             if (IsAvailable && httpContextAccessor.HttpContext!.Request.Headers.AcceptLanguage.Count > 0)
             {
-                return httpContextAccessor.HttpContext!.Request.Headers.AcceptLanguage.FirstOrDefault(SupportedCultures.Check);
+                var acceptedLanguage = httpContextAccessor.HttpContext!.Request.Headers.AcceptLanguage.FirstOrDefault(SupportedCultures.Check);
+                if (acceptedLanguage is not null)
+                {
+                    return acceptedLanguage;
+                }
             }
 
-            return null;
+            return SupportedCultures.Default;
         }
     }
 

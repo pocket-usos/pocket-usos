@@ -1,3 +1,4 @@
+using App.Application.Configuration;
 using App.Application.Grades;
 using App.Application.Shared;
 using App.Infrastructure.Integration.Usos.Courses;
@@ -5,7 +6,7 @@ using App.Infrastructure.Integration.Usos.Grades;
 
 namespace App.Infrastructure.Application.Grades;
 
-public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider coursesProvider) : IGradesRepository
+public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider coursesProvider, IExecutionContextAccessor context) : IGradesRepository
 {
     public async Task<TermGrades> GetGradesForTerm(string term)
     {
@@ -30,7 +31,7 @@ public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider c
                     {
                         if (grade is null) continue;
 
-                        var sessionGrade = CreateSessionGrade(sessionNumber, grade);
+                        var sessionGrade = CreateSessionGrade(sessionNumber, grade, context.Language);
                         termCourseUnit.Grades.Add(sessionGrade);
 
                         if (sessionGrade.CountsIntoAverage && decimal.TryParse(sessionGrade.Grade.Replace(",", "."), out var decimalGrade))
@@ -56,14 +57,14 @@ public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider c
         return termGrades;
     }
 
-    private static SessionGrade CreateSessionGrade(string sessionNumber, GradeDto grade)
+    private static SessionGrade CreateSessionGrade(string sessionNumber, GradeDto grade, string language)
     {
         var sessionGrade = new SessionGrade
         {
             SessionNumber = sessionNumber,
             ExamId = grade.ExamId.ToString(),
             Grade = grade.ValueSymbol,
-            GradeDescription = grade.ValueDescription["pl"],
+            GradeDescription = grade.ValueDescription[language],
             Passes = grade.Passes,
             CountsIntoAverage = grade.CountsIntoAverage == "T",
             Comment = grade.Comment,
@@ -99,7 +100,7 @@ public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider c
     {
         var course = await coursesProvider.GetCourse(id);
 
-        return new Course(id, course.Name["pl"]);
+        return new Course(id, course.Name[context.Language]);
     }
 
     private async Task<CourseUnit> GetCourseUnit(string id)
@@ -107,7 +108,7 @@ public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider c
         var classTypeId = await coursesProvider.GetCourseUnitTypeId(id);
         var classTypes = await coursesProvider.GetClassTypes();
         var classTypeDto = classTypes[classTypeId];
-        var classType = new ClassType(classTypeDto.Id, classTypeDto.Name["pl"]);
+        var classType = new ClassType(classTypeDto.Id, classTypeDto.Name[context.Language]);
 
         return new CourseUnit(id, classType);
     }
