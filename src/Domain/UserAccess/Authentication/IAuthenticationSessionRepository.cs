@@ -8,5 +8,7 @@ public interface IAuthenticationSessionRepository : IRepository
     
     Task<AuthenticationSession> GetByIdAsync(AuthenticationSessionId id);
 
+    Task<AuthenticationSession?> GetByIdOrDefaultAsync(AuthenticationSessionId id);
+
     Task RemoveAsync(AuthenticationSessionId authenticationSessionId);
 }
