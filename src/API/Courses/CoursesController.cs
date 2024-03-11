@@ -1,3 +1,4 @@
+using App.API.Configuration.UsosAuthorize;
 using App.API.Courses.Requests;
 using App.Application.Contracts;
 using App.Application.Courses;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace App.API.Courses;
 
 [ApiController]
+[UsosAuthorize]
 [Route("courses")]
 public class CoursesController(IGateway gateway) : ControllerBase
 {
