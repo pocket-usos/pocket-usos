@@ -1,4 +1,3 @@
-using System.Linq;
 using App.Application.Configuration;
 using App.Application.Schedule;
 using App.Application.Shared;
