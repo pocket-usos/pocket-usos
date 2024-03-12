@@ -1,3 +1,4 @@
+using App.API.Configuration.UsosAuthorize;
 using App.API.Users.Requests;
 using App.Application.Contracts;
 using App.Application.Users;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace App.API.Users;
 
 [ApiController]
+[UsosAuthorize]
 [Route("users")]
 public class UsersController(IGateway gateway) : ControllerBase
 {
