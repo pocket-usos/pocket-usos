@@ -1,3 +1,4 @@
+using App.API.Configuration.UsosAuthorize;
 using App.API.Grades.Requests;
 using App.Application.Contracts;
 using App.Application.Grades;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace App.API.Grades;
 
 [ApiController]
+[UsosAuthorize]
 [Route("grades")]
 public class GradesController(IGateway gateway) : ControllerBase
 {

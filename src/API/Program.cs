@@ -49,14 +49,10 @@ public class Program
         app.UseHttpsRedirection();
         app.UseRouting();
 
-        var supportedCultures = new[] { "en", "pl", "ua" };
-        var localizationOptions = new RequestLocalizationOptions()
-        {
-            ApplyCurrentCultureToResponseHeaders = true
-        }
-            .SetDefaultCulture(supportedCultures[0])
-            .AddSupportedCultures(supportedCultures)
-            .AddSupportedUICultures(supportedCultures);
+        var localizationOptions = new RequestLocalizationOptions { ApplyCurrentCultureToResponseHeaders = true }
+            .SetDefaultCulture(SupportedCultures.Default)
+            .AddSupportedCultures(SupportedCultures.All)
+            .AddSupportedUICultures(SupportedCultures.All);
 
         app.UseRequestLocalization(localizationOptions);
         // app.UseProblemDetails();

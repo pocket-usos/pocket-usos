@@ -1,3 +1,4 @@
+using App.API.Configuration.UsosAuthorize;
 using App.API.Schedule.Requests;
 using App.Application.Contracts;
 using App.Application.Schedule;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace App.API.Schedule;
 
 [ApiController]
+[UsosAuthorize]
 [Route("schedule")]
 public class ScheduleController(IGateway gateway) : ControllerBase
 {

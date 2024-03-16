@@ -5,19 +5,34 @@ namespace App.API.Configuration.ExecutionContext;
 
 public class ExecutionContextAccessor(IHttpContextAccessor httpContextAccessor) : IExecutionContextAccessor
 {
-    private const string SessionIdHeaderName = "Session-Id";
-
     public Guid SessionId
     {
         get
         {
             if (IsAvailable && httpContextAccessor.HttpContext!.Request.Headers.Keys.Any(
-                    x => x.ToLower() == SessionIdHeaderName.ToLower()))
+                    x => x.ToLower() == CustomHeaders.SessionId.ToLower()))
             {
-                return Guid.Parse(httpContextAccessor.HttpContext.Request.Headers[SessionIdHeaderName].ToString());
+                return Guid.Parse(httpContextAccessor.HttpContext.Request.Headers[CustomHeaders.SessionId].ToString());
             }
 
             throw new NotAuthenticatedException("Profile is not authenticated");
+        }
+    }
+
+    public string Language
+    {
+        get
+        {
+            if (IsAvailable && httpContextAccessor.HttpContext!.Request.Headers.AcceptLanguage.Count > 0)
+            {
+                var acceptedLanguage = httpContextAccessor.HttpContext!.Request.Headers.AcceptLanguage.FirstOrDefault(SupportedCultures.Check);
+                if (acceptedLanguage is not null)
+                {
+                    return acceptedLanguage;
+                }
+            }
+
+            return SupportedCultures.Default;
         }
     }
 
