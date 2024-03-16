@@ -1,6 +1,4 @@
-﻿using System.Net;
-using App.Domain.UserAccess.Authentication;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using App.Domain.UserAccess.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -10,7 +8,7 @@ internal class UsosAuthorizeFilter(IAuthenticationSessionRepository authenticati
 {
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
-        var sessionIdValue = context.HttpContext?.Request?.Headers?[CustomHeaders.SessionId].FirstOrDefault();
+        var sessionIdValue = context.HttpContext.Request.Headers[CustomHeaders.SessionId].FirstOrDefault();
         if (sessionIdValue is null || !Guid.TryParse(sessionIdValue, out var sessionId))
         {
             context.Result = Error(UnauthorizedProblemDetails.SessionIdIsNotProvidedOrInvalid);
@@ -28,7 +26,6 @@ internal class UsosAuthorizeFilter(IAuthenticationSessionRepository authenticati
         if (session.AccessToken is null)
         {
             context.Result = Error(UnauthorizedProblemDetails.SessionIsNotAthorizedInUsos);
-            return;
         }
     }
 

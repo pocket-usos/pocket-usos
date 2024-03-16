@@ -59,7 +59,7 @@ public class UserDto
         };
     }
 
-    public User ToUser()
+    public User ToUser(string language)
     {
         return new User
         {
@@ -71,15 +71,15 @@ public class UserDto
             Sex = Sex,
             PhotoUrl = PhotoUrls.Select(photo => photo.Value).ToArray()[0],
             Title = Titles?["before"],
-            OfficeHoursInformation = OfficeHours?["pl"],
+            OfficeHoursInformation = OfficeHours?[language],
             Courses = CourseEditionsConducted?.Select(c => new User.ConductedCourse
             {
                 Id = c.Course.Id,
-                Name = c.Course.Name["pl"],
+                Name = c.Course.Name[language],
                 Term = new User.CourseTerm
                 {
                     Id = c.Term.Id,
-                    Name = c.Term.Name["pl"]
+                    Name = c.Term.Name[language]
                 }
             })
         };

@@ -1,7 +1,7 @@
 using App.Application.Configuration;
 using App.Application.Exceptions;
 
-namespace App.API.Configuration.ExecutionContext;
+namespace App.API.Configuration;
 
 public class ExecutionContextAccessor(IHttpContextAccessor httpContextAccessor) : IExecutionContextAccessor
 {

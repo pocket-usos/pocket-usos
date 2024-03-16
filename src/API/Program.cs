@@ -1,5 +1,4 @@
 using App.API.Configuration;
-using App.API.Configuration.ExecutionContext;
 using App.Application.Configuration;
 using App.Infrastructure.Configuration;
 using Destructurama;

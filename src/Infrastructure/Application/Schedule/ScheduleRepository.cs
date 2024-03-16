@@ -58,10 +58,10 @@ public class ScheduleRepository(ITimeTableProvider timeTableProvider, IUserRepos
             {
                 Start = DateTime.Parse(item.StartTime),
                 End = DateTime.Parse(item.EndTime),
-                Name = item.Name["pl"],
+                Name = item.Name[context.Language],
                 CourseId = item.CourseId,
                 CourseUnitId = item.UnitId,
-                ClassType = new ClassType(item.ClasstypeId, item.ClasstypeName["pl"]),
+                ClassType = new ClassType(item.ClasstypeId, item.ClasstypeName[context.Language]),
                 GroupNumber = item.GroupNumber,
                 Room = new Room
                 {
