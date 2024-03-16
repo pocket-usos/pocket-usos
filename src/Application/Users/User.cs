@@ -17,4 +17,24 @@ public class User
     public string PhotoUrl { get; set; }
 
     public string? Title { get; set; }
+
+    public string? OfficeHoursInformation { get; set; }
+
+    public IEnumerable<ConductedCourse>? Courses { get; set; }
+
+    public class ConductedCourse
+    {
+        public string Id { get; set; }
+
+        public string Name { get; set; }
+
+        public CourseTerm Term { get; set; }
+    }
+
+    public class CourseTerm
+    {
+        public string Id { get; set; }
+
+        public string Name { get; set; }
+    }
 }

@@ -1,10 +1,11 @@
+using App.Application.Configuration;
 using App.Application.Users;
 using App.Infrastructure.Integration.Usos.Students;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace App.Infrastructure.Application.Users;
 
-public class UserRepository(IUsersProvider usersProvider, IMemoryCache cache) : IUserRepository
+public class UserRepository(IUsersProvider usersProvider, IExecutionContextAccessor context, IMemoryCache cache) : IUserRepository
 {
     public async Task<Profile> GetCurrentAsync()
     {
@@ -18,7 +19,7 @@ public class UserRepository(IUsersProvider usersProvider, IMemoryCache cache) : 
         if (!cache.TryGetValue($"user-{id}", out User? user))
         {
             var userDto = await usersProvider.GetUser(id);
-            user = userDto.ToUser();
+            user = userDto.ToUser(context.Language);
 
             cache.Set($"user-{id}", user);
 
@@ -44,7 +45,7 @@ public class UserRepository(IUsersProvider usersProvider, IMemoryCache cache) : 
         }
 
         var usersDictionary = await usersProvider.GetMultipleUsers(userIdsToFetch.ToArray());
-        var fetchedUsers = usersDictionary.Values.Select(userDto => userDto.ToUser()).ToList();
+        var fetchedUsers = usersDictionary.Values.Select(userDto => userDto.ToUser(context.Language)).ToList();
 
         foreach (var user in fetchedUsers)
         {

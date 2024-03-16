@@ -47,6 +47,36 @@ public class ScheduleRepository(ITimeTableProvider timeTableProvider, IUserRepos
         return schedule;
     }
 
+    public async Task<IEnumerable<ScheduleItem>> GetLecturerSchedule(string userId, DateOnly? start, int? days)
+    {
+        var timeTable = (await timeTableProvider.GetStaffTimeTable(userId, start, days)).ToList();
+
+        var schedule = new List<ScheduleItem>();
+        foreach (var item in timeTable)
+        {
+            var scheduleItem = new ScheduleItem
+            {
+                Start = DateTime.Parse(item.StartTime),
+                End = DateTime.Parse(item.EndTime),
+                Name = item.Name[context.Language],
+                CourseId = item.CourseId,
+                CourseUnitId = item.UnitId,
+                ClassType = new ClassType(item.ClasstypeId, item.ClasstypeName[context.Language]),
+                GroupNumber = item.GroupNumber,
+                Room = new Room
+                {
+                    Id = item.RoomId,
+                    Name = item.RoomNumber
+                },
+                Lecturers = new List<Lecturer>()
+            };
+
+            schedule.Add(scheduleItem);
+        }
+
+        return schedule;
+    }
+
     public async Task<IEnumerable<Term>> GetTerms()
     {
         var terms = await termsProvider.GetTerms();

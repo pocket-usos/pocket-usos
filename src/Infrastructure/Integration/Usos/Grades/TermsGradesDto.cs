@@ -27,7 +27,7 @@ public class GradeDto
 
     public required string DateAcquisition { get; set; }
 
-    public required ModificationAuthorDto ModificationAuthor { get; set; }
+    public required ModificationAuthorDto? ModificationAuthor { get; set; }
 }
 
 public class ModificationAuthorDto
