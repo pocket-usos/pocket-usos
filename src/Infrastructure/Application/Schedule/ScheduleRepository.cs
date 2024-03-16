@@ -1,3 +1,4 @@
+using App.Application.Configuration;
 using App.Application.Schedule;
 using App.Application.Shared;
 using App.Application.Users;
@@ -6,7 +7,7 @@ using App.Infrastructure.Integration.Usos.TimeTable;
 
 namespace App.Infrastructure.Application.Schedule;
 
-public class ScheduleRepository(ITimeTableProvider timeTableProvider, IUserRepository userRepository, ITermsProvider termsProvider) : IScheduleRepository
+public class ScheduleRepository(ITimeTableProvider timeTableProvider, IUserRepository userRepository, ITermsProvider termsProvider, IExecutionContextAccessor context) : IScheduleRepository
 {
     public async Task<IEnumerable<ScheduleItem>> GetSchedule(DateOnly? start, int? days)
     {
@@ -21,10 +22,10 @@ public class ScheduleRepository(ITimeTableProvider timeTableProvider, IUserRepos
             {
                 Start = DateTime.Parse(item.StartTime),
                 End = DateTime.Parse(item.EndTime),
-                Name = item.Name["pl"],
+                Name = item.Name[context.Language],
                 CourseId = item.CourseId,
                 CourseUnitId = item.UnitId,
-                ClassType = new ClassType(item.ClasstypeId, item.ClasstypeName["pl"]),
+                ClassType = new ClassType(item.ClasstypeId, item.ClasstypeName[context.Language]),
                 GroupNumber = item.GroupNumber,
                 Room = new Room
                 {
@@ -53,7 +54,7 @@ public class ScheduleRepository(ITimeTableProvider timeTableProvider, IUserRepos
         return terms.Terms.Select(term => new Term
         {
             Id = term.Id,
-            Name = term.Name["pl"],
+            Name = term.Name[context.Language],
             StartDate = DateOnly.Parse(term.StartDate),
             EndDate = DateOnly.Parse(term.EndDate)
         });

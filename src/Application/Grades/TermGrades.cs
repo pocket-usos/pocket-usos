@@ -49,9 +49,9 @@ public class SessionGrade
 
     public string GradeTypeId { get; set; }
 
-    public DateTime ModifiedAt { get; set; }
+    public DateTime? ModifiedAt { get; set; }
 
-    public GradeAuthor ModifiedBy { get; set; }
+    public GradeAuthor? ModifiedBy { get; set; }
 }
 
 public class GradeAuthor
