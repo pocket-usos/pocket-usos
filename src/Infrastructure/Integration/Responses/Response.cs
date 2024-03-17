@@ -50,5 +50,15 @@ internal class Response
         return new Response(responseMessage.StatusCode, content);
     }
 
+    public UsosIntegrationException ToException(string language)
+    {
+        if (!IsSuccessful() && Error is not null)
+        {
+            return new UsosIntegrationException(Error.Message, Error.GetUserMessage(language), StatusCode);
+        }
+
+        throw new InvalidOperationException("Successful response cannot be converted to exception");
+    }
+
     public bool IsSuccessful() => (int)StatusCode >= 200 && (int)StatusCode <= 299;
 }

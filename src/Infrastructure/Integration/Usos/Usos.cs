@@ -1,6 +1,6 @@
+using App.Application.Configuration;
 using App.Domain.UserAccess.Authentication;
 using App.Infrastructure.Integration.Client;
-using App.Infrastructure.Integration.Exceptions;
 using App.Infrastructure.Integration.Requests;
 using App.Infrastructure.Integration.Usos.Courses;
 using App.Infrastructure.Integration.Usos.Grades;
@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace App.Infrastructure.Integration.Usos;
 
-internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProvider, IGradesProvider, ICoursesProvider, ITimeTableProvider, ITermsProvider
+internal class Usos(IUsosHttpClient client, IExecutionContextAccessor context) : IAuthenticationService, IUsersProvider, IGradesProvider, ICoursesProvider, ITimeTableProvider, ITermsProvider
 {
     public async Task<RequestToken> RetrieveRequestToken()
     {
@@ -22,7 +22,7 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
 
         if (!response.IsSuccessful() || response.Content is null)
         {
-            throw new UsosIntegrationException(response.Error!.Message);
+            throw response.ToException(context.Language);
         }
 
         var formReader = new FormReader(response.Content.AsString());
@@ -39,7 +39,7 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
 
         if (!response.IsSuccessful() || response.Content is null)
         {
-            throw new UsosIntegrationException(response.Error!.Message);
+            throw response.ToException(context.Language);
         }
 
         var formReader = new FormReader(response.Content.AsString());
@@ -63,7 +63,7 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
 
         if (!response.IsSuccessful())
         {
-            throw new UsosIntegrationException(response.Error!.Message);
+            throw response.ToException(context.Language);
         }
 
         return response.Content!.As<UserDto>();
@@ -79,7 +79,7 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
 
         if (!response.IsSuccessful())
         {
-            throw new UsosIntegrationException(response.Error!.Message);
+            throw response.ToException(context.Language);
         }
 
         return response.Content!.As<IDictionary<string, UserDto>>();
@@ -95,7 +95,7 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
 
         if (!response.IsSuccessful())
         {
-            throw new UsosIntegrationException(response.Error!.Message);
+            throw response.ToException(context.Language);
         }
 
         return response.Content!.As<IDictionary<string, IDictionary<string, TermCourseDto>>>();
@@ -111,7 +111,7 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
 
         if (!response.IsSuccessful())
         {
-            throw new UsosIntegrationException(response.Error!.Message);
+            throw response.ToException(context.Language);
         }
 
         return response.Content!.As<GradesDistributionDto>();
@@ -126,7 +126,7 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
 
         if (!response.IsSuccessful())
         {
-            throw new UsosIntegrationException(response.Error!.Message);
+            throw response.ToException(context.Language);
         }
 
         return response.Content!.As<CourseDto>();
@@ -142,7 +142,7 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
 
         if (!response.IsSuccessful())
         {
-            throw new UsosIntegrationException(response.Error!.Message);
+            throw response.ToException(context.Language);
         }
 
         return response.Content!.As<CourseEditionDto>();
@@ -158,7 +158,7 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
 
         if (!response.IsSuccessful())
         {
-            throw new UsosIntegrationException(response.Error!.Message);
+            throw response.ToException(context.Language);
         }
 
         var classTypeId = response.Content!.As<CourseUnitTypeIdDto>();
@@ -176,7 +176,7 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
 
         if (!response.IsSuccessful())
         {
-            throw new UsosIntegrationException(response.Error!.Message);
+            throw response.ToException(context.Language);
         }
 
         var classTypeId = response.Content!.As<CourseUnitTermIdDto>();
@@ -192,7 +192,7 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
 
         if (!response.IsSuccessful())
         {
-            throw new UsosIntegrationException(response.Error!.Message);
+            throw response.ToException(context.Language);
         }
 
         return response.Content!.As<IDictionary<string, ClassTypeDto>>();
@@ -207,7 +207,7 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
 
         if (!response.IsSuccessful())
         {
-            throw new UsosIntegrationException(response.Error!.Message);
+            throw response.ToException(context.Language);
         }
 
         return response.Content!.As<UserCoursesDto>();
@@ -223,7 +223,7 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
 
         if (!response.IsSuccessful())
         {
-            throw new UsosIntegrationException(response.Error!.Message);
+            throw response.ToException(context.Language);
         }
 
         return response.Content!.As<CourseScheduleItemDto[]>();
@@ -242,7 +242,7 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
 
         if (!response.IsSuccessful())
         {
-            throw new UsosIntegrationException(response.Error!.Message);
+            throw response.ToException(context.Language);
         }
 
         return response.Content!.As<IEnumerable<TimeTableItemDto>>();
@@ -262,7 +262,7 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
 
         if (!response.IsSuccessful())
         {
-            throw new UsosIntegrationException(response.Error!.Message);
+            throw response.ToException(context.Language);
         }
 
         return response.Content!.As<IEnumerable<TimeTableItemDto>>();
@@ -277,7 +277,7 @@ internal class Usos(IUsosHttpClient client) : IAuthenticationService, IUsersProv
 
         if (!response.IsSuccessful())
         {
-            throw new UsosIntegrationException(response.Error!.Message);
+            throw response.ToException(context.Language);
         }
 
         return response.Content!.As<TermsDto>();

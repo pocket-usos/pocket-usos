@@ -10,7 +10,7 @@ internal static class UnauthorizedProblemDetails
 
     public static ProblemDetails SessionIsNotAthorizedInUsos => Create("Provided session id is not authorized in USOS");
 
-    private static ProblemDetails Create(string detail) => new ProblemDetails()
+    private static ProblemDetails Create(string detail) => new()
     {
         Type = @"https://tools.ietf.org/html/rfc9110#section-15.5.2",
         Status = StatusCodes.Status401Unauthorized,
