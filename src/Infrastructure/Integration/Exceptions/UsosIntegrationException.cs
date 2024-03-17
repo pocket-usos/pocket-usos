@@ -1,3 +1,10 @@
+using System.Net;
+
 namespace App.Infrastructure.Integration.Exceptions;
 
-internal class UsosIntegrationException(string? message) : Exception(message);
+public class UsosIntegrationException(string message, string? userMessage, HttpStatusCode statusCode) : Exception(message)
+{
+    public string? UserMessage { get; } = userMessage;
+
+    public HttpStatusCode StatusCode { get; } = statusCode;
+}

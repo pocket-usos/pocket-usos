@@ -1,7 +1,10 @@
 using App.API.Configuration;
+using App.API.Configuration.Integration;
 using App.Application.Configuration;
 using App.Infrastructure.Configuration;
+using App.Infrastructure.Integration.Exceptions;
 using Destructurama;
+using Hellang.Middleware.ProblemDetails;
 using Serilog;
 using Serilog.Enrichers.Sensitive;
 using ILogger = Serilog.ILogger;
@@ -35,9 +38,10 @@ public class Program
         builder.Services.AddMemoryCache();
         builder.Services.AddDistributedMemoryCache();
 
-        // builder.Services.AddProblemDetails(x =>
-        // {
-        // });
+        builder.Services.AddProblemDetails(x =>
+        {
+            x.Map<UsosIntegrationException>(ex => new UsosIntegrationProblemDetails(ex));
+        });
 
         builder.Services.AddApplicationServices(builder.Configuration);
 
@@ -54,7 +58,7 @@ public class Program
             .AddSupportedUICultures(SupportedCultures.All);
 
         app.UseRequestLocalization(localizationOptions);
-        // app.UseProblemDetails();
+        app.UseProblemDetails();
 
         if (!app.Environment.IsDevelopment())
         {
