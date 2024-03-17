@@ -1,32 +1,47 @@
 using App.Application.Configuration;
 using App.Application.Users;
+using App.Infrastructure.Configuration.DataAccess;
 using App.Infrastructure.Integration.Usos.Students;
-using Microsoft.Extensions.Caching.Memory;
-
 namespace App.Infrastructure.Application.Users;
 
-public class UserRepository(IUsersProvider usersProvider, IExecutionContextAccessor context, IMemoryCache cache) : IUserRepository
+public class UserRepository(IUsersProvider usersProvider, IExecutionContextAccessor context, ICacheProvider cache) : IUserRepository
 {
     public async Task<Profile> GetCurrentAsync()
     {
-        var userDto = await usersProvider.GetUser();
+        var profile = await cache.GetAsync<Profile>($"profile-{context.SessionId.ToString()}");
 
-        return userDto.ToProfile();
+        if (profile is null)
+        {
+            var userDto = await usersProvider.GetUser();
+            profile = userDto.ToProfile();
+
+            await cache.SetAsync($"profile-{context.SessionId.ToString()}", profile, options =>
+            {
+                options.AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(7);
+            });
+        }
+
+        return profile;
     }
 
     public async Task<User> GetByIdAsync(string id)
     {
-        if (!cache.TryGetValue($"user-{id}", out User? user))
+        var user = await cache.GetAsync<User>($"user-{id}");
+
+        if (user is null)
         {
             var userDto = await usersProvider.GetUser(id);
             user = userDto.ToUser(context.Language);
 
-            cache.Set($"user-{id}", user);
+            await cache.SetAsync($"user-{id}", user, options =>
+            {
+                options.AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(7);
+            });
 
             return user;
         }
 
-        return user!;
+        return user;
     }
 
     public async Task<List<User>> GetMultipleAsync(string[] ids)
@@ -36,12 +51,16 @@ public class UserRepository(IUsersProvider usersProvider, IExecutionContextAcces
 
         foreach (var id in ids)
         {
-            if (!cache.TryGetValue($"user={id}", out User? user))
+            var user = await cache.GetAsync<User>($"user-{id}");
+
+            if (user is null)
             {
                 userIdsToFetch.Add(id);
             }
-
-            if (user is not null) users.Add(user);
+            else
+            {
+                users.Add(user);
+            }
         }
 
         var usersDictionary = await usersProvider.GetMultipleUsers(userIdsToFetch.ToArray());
@@ -49,7 +68,10 @@ public class UserRepository(IUsersProvider usersProvider, IExecutionContextAcces
 
         foreach (var user in fetchedUsers)
         {
-            cache.Set($"user={user.Id}", user);
+            await cache.SetAsync($"user={user.Id}", user, options =>
+            {
+                options.AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(7);
+            });
         }
 
         users.AddRange(fetchedUsers);

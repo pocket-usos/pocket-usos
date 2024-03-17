@@ -23,6 +23,8 @@ internal static class DataAccessServiceCollectionExtensions
                 .WithScopedLifetime();
         });
 
+        services.AddScoped<ICacheProvider, CacheProvider>();
+
         return services;
     }
 }

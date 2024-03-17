@@ -5,6 +5,8 @@ using App.Infrastructure.Configuration;
 using App.Infrastructure.Integration.Exceptions;
 using Destructurama;
 using Hellang.Middleware.ProblemDetails;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Serilog;
 using Serilog.Enrichers.Sensitive;
 using ILogger = Serilog.ILogger;
@@ -35,13 +37,17 @@ public class Program
         builder.Services.AddSingleton<IExecutionContextAccessor, ExecutionContextAccessor>();
 
         builder.Services.AddLocalization();
-        builder.Services.AddMemoryCache();
-        builder.Services.AddDistributedMemoryCache();
 
         builder.Services.AddProblemDetails(x =>
         {
             x.Map<UsosIntegrationException>(ex => new UsosIntegrationProblemDetails(ex));
         });
+
+        builder.Services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = builder.Configuration.GetConnectionString("Cache");
+        });
+        builder.Services.Add(ServiceDescriptor.Singleton<IDistributedCache, RedisCache>());
 
         builder.Services.AddApplicationServices(builder.Configuration);
 

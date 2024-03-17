@@ -14,6 +14,17 @@ services:
     networks:
       - pocket-usos
 
+  cache:
+    container_name: pocket-usos-cache
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - cache:/data
+    networks:
+      - pocket-usos
+
   adminer:
     container_name: pocket-usos-adminer
     image: adminer
@@ -25,6 +36,7 @@ services:
 
 volumes:
   database_data:
+  cache:
 
 networks:
   pocket-usos:
