@@ -16,7 +16,7 @@ public class Course
 
     public required ClassType ClassType { get; set; }
 
-    public ScheduleDto? Schedule { get; set; }
+    public Schedule? Schedule { get; set; }
 
     public required List<Lecturer> Lecturers { get; set; }
 
@@ -41,7 +41,7 @@ public class Participant
     public required string LastName { get; set; }
 }
 
-public class ScheduleDto
+public class Schedule
 {
     public required List<ScheduleItemDto> Items { get; set; }
 

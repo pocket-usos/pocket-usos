@@ -9,9 +9,11 @@ namespace App.Infrastructure.Application.Schedule;
 
 public class ScheduleRepository(ITimeTableProvider timeTableProvider, IUserRepository userRepository, ITermsProvider termsProvider, IExecutionContextAccessor context) : IScheduleRepository
 {
+    private const int DefaultScheduleDaysCount = 7;
+
     public async Task<IEnumerable<ScheduleItem>> GetSchedule(DateOnly? start, int? days)
     {
-        var timeTable = (await timeTableProvider.GetUserTimeTable(start, days)).ToList();
+        var timeTable = (await timeTableProvider.GetUserTimeTable(start ?? DateOnly.FromDateTime(DateTime.Now), days ?? DefaultScheduleDaysCount)).ToList();
 
         var schedule = new List<ScheduleItem>();
         foreach (var item in timeTable)
@@ -49,7 +51,7 @@ public class ScheduleRepository(ITimeTableProvider timeTableProvider, IUserRepos
 
     public async Task<IEnumerable<ScheduleItem>> GetLecturerSchedule(string userId, DateOnly? start, int? days)
     {
-        var timeTable = (await timeTableProvider.GetStaffTimeTable(userId, start, days)).ToList();
+        var timeTable = (await timeTableProvider.GetStaffTimeTable(userId, start ?? DateOnly.FromDateTime(DateTime.Now), days ?? DefaultScheduleDaysCount)).ToList();
 
         var schedule = new List<ScheduleItem>();
         foreach (var item in timeTable)

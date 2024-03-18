@@ -27,8 +27,6 @@ public class TermCourseUnit(string id, ClassType type)
     public ClassType Type { get; set; } = type;
 
     public List<SessionGrade> Grades { get; set; } = new();
-
-    public GradesDistributionItem[] GradesDistribution { get; set; }
 }
 
 public class SessionGrade
