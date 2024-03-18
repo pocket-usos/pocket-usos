@@ -40,8 +40,6 @@ public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider c
                         }
                     }
 
-                    await GetGradesDistribution(termCourseUnit);
-
                     termCourse.Units.Add(termCourseUnit);
                 }
 
@@ -55,6 +53,18 @@ public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider c
         }
 
         return termGrades;
+    }
+
+    public async Task<GradesDistributionItem[]> GetGradesDistribution(string examId)
+    {
+        var gradesDistributionDto = await gradesProvider.GetExamGradesDistribution(examId);
+        var gradesDistribution = gradesDistributionDto.GradesDistribution.Select(d => new GradesDistributionItem
+        {
+            Percentage = d.Percentage,
+            Grade = d.GradeSymbol
+        }).Where(d => d.Percentage > 0).ToArray();
+
+        return gradesDistribution;
     }
 
     private static SessionGrade CreateSessionGrade(string sessionNumber, GradeDto grade, string language)
@@ -86,22 +96,6 @@ public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider c
             ModifiedBy = modifiedBy,
         };
         return sessionGrade;
-    }
-
-    private async Task GetGradesDistribution(TermCourseUnit termCourseUnit)
-    {
-        var examId = termCourseUnit.Grades.SingleOrDefault()?.ExamId;
-
-        if (examId is not null)
-        {
-            var gradesDistributionDto = await gradesProvider.GetExamGradesDistribution(examId);
-            var gradesDistribution = gradesDistributionDto.GradesDistribution.Select(d => new GradesDistributionItem
-            {
-                Percentage = d.Percentage,
-                Grade = d.GradeSymbol
-            }).Where(d => d.Percentage > 0).ToArray();
-            termCourseUnit.GradesDistribution = gradesDistribution;
-        }
     }
 
     private async Task<Course> GetCourse(string id)
