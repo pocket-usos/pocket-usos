@@ -25,7 +25,7 @@ public class ScheduleController(IGateway gateway) : ControllerBase
 
     [HttpGet("lecturers/{lecturerId}")]
     [ProducesResponseType(typeof(IEnumerable<ScheduleItem>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetMySchedule(string lecturerId, [FromQuery] GetMyScheduleRequest request)
+    public async Task<IActionResult> GetLecturersSchedule(string lecturerId, [FromQuery] GetMyScheduleRequest request)
     {
         var schedule = await gateway.ExecuteQueryAsync(new GetLecturersScheduleQuery(lecturerId, request.Start, request.Days));
 

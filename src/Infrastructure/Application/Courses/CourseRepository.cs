@@ -27,7 +27,7 @@ public class CourseRepository(ICoursesProvider coursesProvider, IExecutionContex
         }).ToList();
 
         var courseSchedule = await coursesProvider.GetCourseSchedule(group.CourseUnitId, group.GroupNumber);
-        var schedule = new ScheduleDto
+        var schedule = new App.Application.Courses.Schedule
         {
             Items = courseSchedule.Select(s => new ScheduleItemDto
             {
@@ -69,11 +69,11 @@ public class CourseRepository(ICoursesProvider coursesProvider, IExecutionContex
                     LastName = lecturer.LastName,
                 }).ToList();
 
-                ScheduleDto? schedule = null;
+                App.Application.Courses.Schedule? schedule = null;
                 if (withSchedule)
                 {
                     var courseSchedule = await coursesProvider.GetCourseSchedule(userGroup.CourseUnitId, userGroup.GroupNumber);
-                    schedule = new ScheduleDto
+                    schedule = new App.Application.Courses.Schedule
                     {
                         Items = courseSchedule.Select(s => new ScheduleItemDto
                         {

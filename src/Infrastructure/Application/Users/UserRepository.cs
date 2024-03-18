@@ -63,12 +63,17 @@ public class UserRepository(IUsersProvider usersProvider, IExecutionContextAcces
             }
         }
 
+        if (userIdsToFetch.Count == 0)
+        {
+            return users;
+        }
+
         var usersDictionary = await usersProvider.GetMultipleUsers(userIdsToFetch.ToArray());
         var fetchedUsers = usersDictionary.Values.Select(userDto => userDto.ToUser(context.Language)).ToList();
 
         foreach (var user in fetchedUsers)
         {
-            await cache.SetAsync($"user={user.Id}", user, options =>
+            await cache.SetAsync($"user-{user.Id}", user, options =>
             {
                 options.AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(7);
             });
