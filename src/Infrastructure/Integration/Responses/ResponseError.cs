@@ -1,3 +1,5 @@
+using App.Infrastructure.Translations;
+
 namespace App.Infrastructure.Integration.Responses;
 
 internal class ResponseError(string message, string error, string reason, UserMessages? userMessages)
@@ -12,7 +14,7 @@ internal class ResponseError(string message, string error, string reason, UserMe
 
     public string? GetUserMessage(string language)
     {
-        return UserMessages?.GenericMessage?[language];
+        return UserMessages?.GenericMessage?.Translate(language);
     }
 }
 

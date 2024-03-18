@@ -1,4 +1,6 @@
 using App.Application.Users;
+using App.Infrastructure.Translations;
+using Polly;
 
 namespace App.Infrastructure.Integration.Usos.Students;
 
@@ -54,7 +56,7 @@ public class UserDto
             MobileNumbers = MobileNumbers,
             Citizenship = new Citizenship(Citizenship!.Id),
             StudentNumber = StudentNumber!,
-            PhotoUrl = PhotoUrls.Select(photo => photo.Value).ToArray()[0],
+            PhotoUrl = PhotoUrls.Select(photo => photo.Value).First(),
             Addresses = PostalAddresses.Select(a => new Address(a.Type, a.Address)).ToArray()
         };
     }
@@ -71,15 +73,15 @@ public class UserDto
             Sex = Sex,
             PhotoUrl = PhotoUrls.Select(photo => photo.Value).ToArray()[0],
             Title = Titles?["before"],
-            OfficeHoursInformation = OfficeHours?[language],
+            OfficeHoursInformation = OfficeHours?.Translate(language),
             Courses = CourseEditionsConducted?.Select(c => new User.ConductedCourse
             {
                 Id = c.Course.Id,
-                Name = c.Course.Name[language],
+                Name = c.Course.Name.Translate(language),
                 Term = new User.CourseTerm
                 {
                     Id = c.Term.Id,
-                    Name = c.Term.Name[language]
+                    Name = c.Term.Name.Translate(language)
                 }
             })
         };

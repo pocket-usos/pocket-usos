@@ -8,14 +8,14 @@ public class UserRepository(IUsersProvider usersProvider, IExecutionContextAcces
 {
     public async Task<Profile> GetCurrentAsync()
     {
-        var profile = await cache.GetAsync<Profile>($"profile-{context.SessionId.ToString()}");
+        var profile = await cache.GetAsync<Profile>($"profile-{context.SessionId}");
 
         if (profile is null)
         {
             var userDto = await usersProvider.GetUser();
             profile = userDto.ToProfile();
 
-            await cache.SetAsync($"profile-{context.SessionId.ToString()}", profile, options =>
+            await cache.SetAsync($"profile-{context.SessionId}", profile, options =>
             {
                 options.AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(7);
             });

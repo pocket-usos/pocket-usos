@@ -4,6 +4,7 @@ using App.Application.Shared;
 using App.Application.Users;
 using App.Infrastructure.Integration.Usos.Terms;
 using App.Infrastructure.Integration.Usos.TimeTable;
+using App.Infrastructure.Translations;
 
 namespace App.Infrastructure.Application.Schedule;
 
@@ -24,10 +25,10 @@ public class ScheduleRepository(ITimeTableProvider timeTableProvider, IUserRepos
             {
                 Start = DateTime.Parse(item.StartTime),
                 End = DateTime.Parse(item.EndTime),
-                Name = item.Name[context.Language],
+                Name = item.Name.Translate(context.Language),
                 CourseId = item.CourseId,
                 CourseUnitId = item.UnitId,
-                ClassType = new ClassType(item.ClasstypeId, item.ClasstypeName[context.Language]),
+                ClassType = new ClassType(item.ClasstypeId, item.ClasstypeName.Translate(context.Language)),
                 GroupNumber = item.GroupNumber,
                 Room = new Room
                 {
@@ -60,10 +61,10 @@ public class ScheduleRepository(ITimeTableProvider timeTableProvider, IUserRepos
             {
                 Start = DateTime.Parse(item.StartTime),
                 End = DateTime.Parse(item.EndTime),
-                Name = item.Name[context.Language],
+                Name = item.Name.Translate(context.Language),
                 CourseId = item.CourseId,
                 CourseUnitId = item.UnitId,
-                ClassType = new ClassType(item.ClasstypeId, item.ClasstypeName[context.Language]),
+                ClassType = new ClassType(item.ClasstypeId, item.ClasstypeName.Translate(context.Language)),
                 GroupNumber = item.GroupNumber,
                 Room = new Room
                 {
@@ -86,7 +87,7 @@ public class ScheduleRepository(ITimeTableProvider timeTableProvider, IUserRepos
         return terms.Terms.Select(term => new Term
         {
             Id = term.Id,
-            Name = term.Name[context.Language],
+            Name = term.Name.Translate(context.Language),
             StartDate = DateOnly.Parse(term.StartDate),
             EndDate = DateOnly.Parse(term.EndDate)
         });

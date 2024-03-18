@@ -3,6 +3,7 @@ using App.Application.Grades;
 using App.Application.Shared;
 using App.Infrastructure.Integration.Usos.Courses;
 using App.Infrastructure.Integration.Usos.Grades;
+using App.Infrastructure.Translations;
 
 namespace App.Infrastructure.Application.Grades;
 
@@ -87,7 +88,7 @@ public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider c
             SessionNumber = sessionNumber,
             ExamId = grade.ExamId.ToString(),
             Grade = grade.ValueSymbol,
-            GradeDescription = grade.ValueDescription[language],
+            GradeDescription = grade.ValueDescription.Translate(language),
             Passes = grade.Passes,
             CountsIntoAverage = grade.CountsIntoAverage == "T",
             Comment = grade.Comment,
@@ -102,7 +103,7 @@ public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider c
     {
         var course = await coursesProvider.GetCourse(id);
 
-        return new Course(id, course.Name[context.Language]);
+        return new Course(id, course.Name.Translate(context.Language));
     }
 
     private async Task<CourseUnit> GetCourseUnit(string id)
@@ -110,7 +111,7 @@ public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider c
         var classTypeId = await coursesProvider.GetCourseUnitTypeId(id);
         var classTypes = await coursesProvider.GetClassTypes();
         var classTypeDto = classTypes[classTypeId];
-        var classType = new ClassType(classTypeDto.Id, classTypeDto.Name[context.Language]);
+        var classType = new ClassType(classTypeDto.Id, classTypeDto.Name.Translate(context.Language));
 
         return new CourseUnit(id, classType);
     }
