@@ -2,6 +2,7 @@ using App.Application.Configuration;
 using App.Application.Courses;
 using App.Application.Shared;
 using App.Infrastructure.Integration.Usos.Courses;
+using App.Infrastructure.Translations;
 
 namespace App.Infrastructure.Application.Courses;
 
@@ -42,10 +43,10 @@ public class CourseRepository(ICoursesProvider coursesProvider, IExecutionContex
         {
             Id = group.CourseId,
             UnitId = group.CourseUnitId,
-            Name = group.CourseName[context.Language],
+            Name = group.CourseName.Translate(context.Language),
             Term = group.TermId,
             GroupNumber = group.GroupNumber,
-            ClassType = new ClassType(group.ClassTypeId, group.ClassType[context.Language]),
+            ClassType = new ClassType(group.ClassTypeId, group.ClassType.Translate(context.Language)),
             Schedule = schedule,
             Lecturers = lecturers,
             Participants = participants
@@ -89,11 +90,11 @@ public class CourseRepository(ICoursesProvider coursesProvider, IExecutionContex
                 {
                     Id = userGroup.CourseId,
                     UnitId = userGroup.CourseUnitId,
-                    Name = userGroup.CourseName[context.Language],
+                    Name = userGroup.CourseName.Translate(context.Language),
                     Term = userGroup.TermId,
                     GroupNumber = userGroup.GroupNumber,
                     ClassType = new ClassType(userGroup.ClassTypeId,
-                        userGroup.ClassType[context.Language]),
+                        userGroup.ClassType.Translate(context.Language)),
                     Lecturers = lecturers,
                     Schedule = schedule,
                     Participants = userGroup.Participants.Select(p => new Participant
