@@ -70,7 +70,7 @@ public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider c
 
     private static SessionGrade CreateSessionGrade(string sessionNumber, GradeDto grade, string language)
     {
-        var isModifiedAt = DateTime.TryParse(grade.DateAcquisition, out var modifiedAt);
+        var isModifiedAt = DateTime.TryParse(grade.DateModified, out var modifiedAt);
 
         GradeAuthor? modifiedBy = null;
         if (grade.ModificationAuthor is not null)
