@@ -6,6 +6,8 @@ public class Notification
 
     public string UserId { get; private set; }
 
+    public NotificationType Type { get; private set; }
+
     public NotificationContent Content { get; private set; }
 
     public bool WasRead { get; private set; }
@@ -17,10 +19,11 @@ public class Notification
         WasRead = true;
     }
 
-    public Notification(string userId, NotificationContent content)
+    public Notification(string userId, NotificationType type, NotificationContent content)
     {
         Id = new NotificationId(Guid.NewGuid());
         UserId = userId;
+        Type = type;
         Content = content;
         WasRead = false;
         CreatedAt = DateTime.Now;

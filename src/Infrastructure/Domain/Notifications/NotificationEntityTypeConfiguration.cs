@@ -18,6 +18,11 @@ public class NotificationEntityTypeConfiguration : IEntityTypeConfiguration<Noti
         builder.Property(n => n.WasRead).HasColumnName("was_read");
         builder.Property(n => n.CreatedAt).HasColumnName("created_at");
 
+        builder.ComplexProperty<NotificationType>(n => n.Type, b =>
+        {
+            b.Property<string>(c => c.Value).HasColumnName("type");
+        });
+
         builder.ComplexProperty<NotificationContent>(n => n.Content, b =>
         {
             b.Property<string>(c => c.Pl).HasColumnName("content_pl");
