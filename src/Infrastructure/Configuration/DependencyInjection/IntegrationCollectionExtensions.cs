@@ -3,6 +3,7 @@ using App.Domain.UserAccess.Authentication;
 using App.Infrastructure.Integration.Client;
 using App.Infrastructure.Integration.Configuration;
 using App.Infrastructure.Integration.Usos;
+using App.Infrastructure.Integration.Usos.Authentication;
 using App.Infrastructure.Integration.Usos.Courses;
 using App.Infrastructure.Integration.Usos.Grades;
 using App.Infrastructure.Integration.Usos.Students;
@@ -33,12 +34,12 @@ public static class IntegrationCollectionExtensions
         services.AddSingleton(usosConfiguration);
         services.AddScoped<AuthenticationHeaderProvider>();
 
-        services.AddScoped<IAuthenticationService, Usos>();
-        services.AddScoped<IUsersProvider, Usos>();
-        services.AddScoped<IGradesProvider, Usos>();
-        services.AddScoped<ICoursesProvider, Usos>();
-        services.AddScoped<ITimeTableProvider, Usos>();
-        services.AddScoped<ITermsProvider, Usos>();
+        services.AddScoped<IAuthenticationService, UsosAuthenticationService>();
+        services.AddScoped<IUsersProvider, UsosUsersProvider>();
+        services.AddScoped<IGradesProvider, UsosGradesProvider>();
+        services.AddScoped<ICoursesProvider, UsosCoursesProvider>();
+        services.AddScoped<ITimeTableProvider, UsosTimeTableProvider>();
+        services.AddScoped<ITermsProvider, UsosTermsProvider>();
 
         return services;
     }
