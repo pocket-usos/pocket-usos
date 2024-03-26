@@ -9,13 +9,6 @@ internal class UsosTimeTableProvider(IUsosHttpClient client, IExecutionContextAc
 {
     public async Task<IEnumerable<TimeTableItemDto>> GetStaffTimeTable(string userId, DateOnly start, int days)
     {
-        var timeTable = await cache.GetAsync<IEnumerable<TimeTableItemDto>>($"usos-staff-{userId}-timetable-{start.ToString("yyyy-MM-dd")}-{days}");
-
-        if (timeTable is not null)
-        {
-            return timeTable;
-        }
-
         var request = Request.Get("services/tt/staff")
             .WithQueryParameter("user_id", userId)
             .WithQueryParameter("fields",
@@ -30,25 +23,11 @@ internal class UsosTimeTableProvider(IUsosHttpClient client, IExecutionContextAc
             throw response.ToException(context.Language);
         }
 
-        timeTable = response.Content!.As<IEnumerable<TimeTableItemDto>>().ToList();
-
-        await cache.SetAsync($"usos-staff-{userId}-timetable-{start.ToString("yyyy-MM-dd")}-{days}", timeTable, options =>
-        {
-            options.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
-        });
-
-        return timeTable;
+        return response.Content!.As<IEnumerable<TimeTableItemDto>>().ToList();
     }
 
     public async Task<IEnumerable<TimeTableItemDto>> GetUserTimeTable(DateOnly start, int days)
     {
-        var timeTable = await cache.GetAsync<IEnumerable<TimeTableItemDto>>($"usos-user-{context.SessionId}-timetable-{start.ToString("yyyy-MM-dd")}-{days}");
-
-        if (timeTable is not null)
-        {
-            return timeTable;
-        }
-
         var request = Request.Get("services/tt/user")
             .WithQueryParameter("fields",
                 "start_time|end_time|name|course_id|course_name|classtype_id|classtype_name|lecturer_ids|group_number|building_name|building_id|room_number|room_id|unit_id|classtype_id|cgwm_id|frequency")
@@ -62,13 +41,6 @@ internal class UsosTimeTableProvider(IUsosHttpClient client, IExecutionContextAc
             throw response.ToException(context.Language);
         }
 
-        timeTable = response.Content!.As<IEnumerable<TimeTableItemDto>>().ToList();
-
-        await cache.SetAsync($"usos-user-{context.SessionId}-timetable-{start.ToString("yyyy-MM-dd")}-{days}", timeTable, options =>
-        {
-            options.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
-        });
-
-        return timeTable;
+        return response.Content!.As<IEnumerable<TimeTableItemDto>>().ToList();
     }
 }

@@ -58,9 +58,25 @@ public static class IntegrationCollectionExtensions
             return new CachedCoursesProvider(courcesProvider, cache, executionContext);
         });
 
+        services.AddScoped<UsosTimeTableProvider>();
+        services.AddScoped<ITimeTableProvider>(services =>
+        {
+            var timeTableProvider = services.GetRequiredService<UsosTimeTableProvider>();
+            var cache = services.GetRequiredService<ICacheProvider>();
+            var executionContext = services.GetRequiredService<IExecutionContextAccessor>();
 
-        services.AddScoped<ITimeTableProvider, UsosTimeTableProvider>();
-        services.AddScoped<ITermsProvider, UsosTermsProvider>();
+            return new CachedTimeTableProvider(timeTableProvider, cache, executionContext);
+        });
+
+        services.AddScoped<UsosTermsProvider>();
+        services.AddScoped<ITermsProvider>(service =>
+        {
+            var termsProvider = service.GetRequiredService<UsosTermsProvider>();
+            var cache = service.GetRequiredService<ICacheProvider>();
+            var executionContext = service.GetRequiredService<IExecutionContextAccessor>();
+
+            return new CachedTermsProvider(termsProvider, cache, executionContext);
+        });
 
         return services;
     }
