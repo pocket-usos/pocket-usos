@@ -38,7 +38,7 @@ internal class Response
 
             if (responseError is null)
             {
-                throw new InvalidResponseContentException("Response content was not properly deserialized");
+                throw new InvalidResponseContentException("Response notificationContent was not properly deserialized");
             }
 
             return new Response(responseMessage.StatusCode, responseError);
