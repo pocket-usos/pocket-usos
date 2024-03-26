@@ -3,7 +3,7 @@ using App.Infrastructure.Configuration.DataAccess;
 
 namespace App.Infrastructure.Integration.Usos.Courses;
 
-internal class CachedUsosCoursesProvider(ICoursesProvider coursesProvider, ICacheProvider cache, IExecutionContextAccessor context) : ICoursesProvider
+internal class CachedCoursesProvider(ICoursesProvider coursesProvider, ICacheProvider cache, IExecutionContextAccessor context) : ICoursesProvider
 {
     public async Task<IDictionary<string, ClassTypeDto>> GetClassTypes()
     {

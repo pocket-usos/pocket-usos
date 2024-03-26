@@ -1,5 +1,3 @@
-using Polly;
-
 namespace App.Infrastructure.Integration.Usos.Grades;
 
 public interface IGradesProvider

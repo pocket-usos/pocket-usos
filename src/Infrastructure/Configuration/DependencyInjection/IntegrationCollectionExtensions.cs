@@ -37,7 +37,16 @@ public static class IntegrationCollectionExtensions
 
         services.AddScoped<IAuthenticationService, UsosAuthenticationService>();
         services.AddScoped<IUsersProvider, UsosUsersProvider>();
-        services.AddScoped<IGradesProvider, UsosGradesProvider>();
+
+        services.AddScoped<UsosGradesProvider>();
+        services.AddScoped<IGradesProvider>(services =>
+        {
+            var gradesProvider = services.GetRequiredService<UsosGradesProvider>();
+            var cache = services.GetRequiredService<ICacheProvider>();
+            var executionContext = services.GetRequiredService<IExecutionContextAccessor>();
+
+            return new CachedGradesProvider(gradesProvider, cache, executionContext);
+        });
 
         services.AddScoped<UsosCoursesProvider>();
         services.AddScoped<ICoursesProvider>(services =>
@@ -46,7 +55,7 @@ public static class IntegrationCollectionExtensions
             var cache = services.GetRequiredService<ICacheProvider>();
             var executionContext = services.GetRequiredService<IExecutionContextAccessor>();
 
-            return new CachedUsosCoursesProvider(courcesProvider, cache, executionContext);
+            return new CachedCoursesProvider(courcesProvider, cache, executionContext);
         });
 
 
