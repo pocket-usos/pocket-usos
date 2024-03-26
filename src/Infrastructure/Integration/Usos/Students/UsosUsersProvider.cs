@@ -1,11 +1,10 @@
 ﻿using App.Application.Configuration;
-using App.Infrastructure.Configuration.DataAccess;
 using App.Infrastructure.Integration.Client;
 using App.Infrastructure.Integration.Requests;
 
 namespace App.Infrastructure.Integration.Usos.Students;
 
-internal class UsosUsersProvider(IUsosHttpClient client, IExecutionContextAccessor context, ICacheProvider cache) : IUsersProvider
+internal class UsosUsersProvider(IUsosHttpClient client, IExecutionContextAccessor context) : IUsersProvider
 {
     public async Task<UserDto> GetUser(string? id = null)
     {

@@ -1,5 +1,6 @@
 using App.Application.Configuration;
 using App.Domain.UserAccess.Authentication;
+using App.Infrastructure.Configuration.DataAccess;
 using App.Infrastructure.Integration.Client;
 using App.Infrastructure.Integration.Configuration;
 using App.Infrastructure.Integration.Usos;
@@ -37,7 +38,18 @@ public static class IntegrationCollectionExtensions
         services.AddScoped<IAuthenticationService, UsosAuthenticationService>();
         services.AddScoped<IUsersProvider, UsosUsersProvider>();
         services.AddScoped<IGradesProvider, UsosGradesProvider>();
-        services.AddScoped<ICoursesProvider, UsosCoursesProvider>();
+
+        services.AddScoped<UsosCoursesProvider>();
+        services.AddScoped<ICoursesProvider>(services =>
+        {
+            var courcesProvider = services.GetRequiredService<UsosCoursesProvider>();
+            var cache = services.GetRequiredService<ICacheProvider>();
+            var executionContext = services.GetRequiredService<IExecutionContextAccessor>();
+
+            return new CachedUsosCoursesProvider(courcesProvider, cache, executionContext);
+        });
+
+
         services.AddScoped<ITimeTableProvider, UsosTimeTableProvider>();
         services.AddScoped<ITermsProvider, UsosTermsProvider>();
 
