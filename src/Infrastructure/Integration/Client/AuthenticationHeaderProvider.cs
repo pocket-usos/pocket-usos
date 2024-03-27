@@ -6,15 +6,15 @@ namespace App.Infrastructure.Integration.Client;
 
 internal class AuthenticationHeaderProvider(UsosClientConfiguration configuration, IAuthenticationSessionRepository authenticationSessionRepository)
 {
-    public string GetAuthorizationHeader(string requestUrl)
+    public string GetAuthorizationHeader(Guid institutionId, string requestUrl)
     {
         var oauthRequest = new OAuthRequest
         {
             Method = "POST",
             Type = OAuthRequestType.RequestToken,
             SignatureMethod = OAuthSignatureMethod.HmacSha1,
-            ConsumerKey = configuration.ConsumerKey,
-            ConsumerSecret = configuration.ConsumerSecret,
+            ConsumerKey = configuration.Institutions[institutionId.ToString()].ConsumerKey,
+            ConsumerSecret = configuration.Institutions[institutionId.ToString()].ConsumerSecret,
             RequestUrl = requestUrl,
             Version = "1.0",
             CallbackUrl = configuration.CallbackUrl,
@@ -32,8 +32,8 @@ internal class AuthenticationHeaderProvider(UsosClientConfiguration configuratio
             Method = "GET",
             Type = OAuthRequestType.RequestToken,
             SignatureMethod = OAuthSignatureMethod.HmacSha1,
-            ConsumerKey = configuration.ConsumerKey,
-            ConsumerSecret = configuration.ConsumerSecret,
+            ConsumerKey = configuration.Institutions[session.InstitutionId.Value.ToString()].ConsumerKey,
+            ConsumerSecret = configuration.Institutions[session.InstitutionId.Value.ToString()].ConsumerSecret,
             RequestUrl = requestUrl,
             Version = "1.0",
             Token = session.AccessToken?.Value,
@@ -43,15 +43,15 @@ internal class AuthenticationHeaderProvider(UsosClientConfiguration configuratio
         return oauthRequest.GetAuthorizationHeader();
     }
 
-    public string GetAuthorizationHeader(string requestUrl, AccessTokenRequestWithVerifier accessToken)
+    public string GetAuthorizationHeader(Guid institutionId, string requestUrl, AccessTokenRequestWithVerifier accessToken)
     {
         var oauthRequest = new OAuthRequest
         {
             Method = "POST",
             Type = OAuthRequestType.AccessToken,
             SignatureMethod = OAuthSignatureMethod.HmacSha1,
-            ConsumerKey = configuration.ConsumerKey,
-            ConsumerSecret = configuration.ConsumerSecret,
+            ConsumerKey = configuration.Institutions[institutionId.ToString()].ConsumerKey,
+            ConsumerSecret = configuration.Institutions[institutionId.ToString()].ConsumerSecret,
             RequestUrl = requestUrl,
             Version = "1.0",
             Token = accessToken.Token,

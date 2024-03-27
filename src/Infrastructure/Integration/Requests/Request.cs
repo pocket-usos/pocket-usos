@@ -5,9 +5,11 @@ using App.Infrastructure.Integration.Json;
 
 namespace App.Infrastructure.Integration.Requests;
 
-internal abstract class Request(HttpMethod method, string path)
+internal abstract class Request(HttpMethod method, Guid institutionId, string path)
 {
     public HttpMethod Method { get; } = method;
+
+    public Guid InstitutionId { get; } = institutionId;
 
     private string Path { get; } = path;
 
@@ -44,45 +46,45 @@ internal abstract class Request(HttpMethod method, string path)
         return Path;
     }
 
-    public static GetRequest Get(string path)
+    public static GetRequest Get(Guid institutionId, string path)
     {
-        return new GetRequest(path);
+        return new GetRequest(institutionId, path);
     }
 
-    public static PostRequest Post(string path)
+    public static PostRequest Post(Guid institutionId, string path)
     {
-        return new PostRequest(path);
-    }
-    
-    public static AccessTokenRequest AccessToken(string path, string requestToken, string requestTokenSecret, string verifier)
-    {
-        return new AccessTokenRequest(path, requestToken, requestTokenSecret, verifier);
-    }
-    
-    public static RequestTokenRequest RequestToken(string path)
-    {
-        return new RequestTokenRequest(path);
+        return new PostRequest(institutionId, path);
     }
 
-    public static PatchRequest Patch(string path)
+    public static AccessTokenRequest AccessToken(Guid institutionId, string path, string requestToken, string requestTokenSecret, string verifier)
     {
-        return new PatchRequest(path);
+        return new AccessTokenRequest(institutionId, path, requestToken, requestTokenSecret, verifier);
     }
 
-    public static PutRequest Put(string path)
+    public static RequestTokenRequest RequestToken(Guid institutionId, string path)
     {
-        return new PutRequest(path);
+        return new RequestTokenRequest(institutionId, path);
     }
 
-    public static DeleteRequest Delete(string path)
+    public static PatchRequest Patch(Guid institutionId, string path)
     {
-        return new DeleteRequest(path);
+        return new PatchRequest(institutionId, path);
+    }
+
+    public static PutRequest Put(Guid institutionId, string path)
+    {
+        return new PutRequest(institutionId, path);
+    }
+
+    public static DeleteRequest Delete(Guid institutionId, string path)
+    {
+        return new DeleteRequest(institutionId, path);
     }
 }
 
-internal class GetRequest(string path) : Request(HttpMethod.Get, path);
+internal class GetRequest(Guid institutionId, string path) : Request(HttpMethod.Get, institutionId, path);
 
-internal class PostRequest(string path) : Request(HttpMethod.Post, path)
+internal class PostRequest(Guid institutionId, string path) : Request(HttpMethod.Post, institutionId, path)
 {
     public Request WithContent(object content)
     {
@@ -98,18 +100,18 @@ internal class PostRequest(string path) : Request(HttpMethod.Post, path)
     }
 }
 
-internal class RequestTokenRequest(string path) : PostRequest(path);
+internal class RequestTokenRequest(Guid institutionId, string path) : PostRequest(institutionId, path);
 
-internal class AccessTokenRequest(string path, string requestToken, string requestTokenSecret, string verifier) : PostRequest(path)
+internal class AccessTokenRequest(Guid institutionId, string path, string requestToken, string requestTokenSecret, string verifier) : PostRequest(institutionId, path)
 {
     public string Token { get; } = requestToken;
-    
+
     public string Secret { get; } = requestTokenSecret;
-    
+
     public string Verifier { get; } = verifier;
 }
 
-internal class PatchRequest(string path) : Request(HttpMethod.Patch, path)
+internal class PatchRequest(Guid institutionId, string path) : Request(HttpMethod.Patch, institutionId, path)
 {
     public Request WithContent(object content)
     {
@@ -125,7 +127,7 @@ internal class PatchRequest(string path) : Request(HttpMethod.Patch, path)
     }
 }
 
-internal class PutRequest(string path) : Request(HttpMethod.Put, path)
+internal class PutRequest(Guid institutionId, string path) : Request(HttpMethod.Put, institutionId, path)
 {
     public Request WithContent(object content)
     {
@@ -141,4 +143,4 @@ internal class PutRequest(string path) : Request(HttpMethod.Put, path)
     }
 }
 
-internal class DeleteRequest(string path) : Request(HttpMethod.Delete, path);
+internal class DeleteRequest(Guid institutionId, string path) : Request(HttpMethod.Delete, institutionId, path);
