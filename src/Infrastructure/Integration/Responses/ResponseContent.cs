@@ -18,7 +18,7 @@ internal class ResponseContent
 
         if (responseContentData is null)
         {
-            throw new InvalidResponseContentException("Response notificationContent was not properly deserialized");
+            throw new InvalidResponseContentException("Response content was not properly deserialized");
         }
 
         return responseContentData;
