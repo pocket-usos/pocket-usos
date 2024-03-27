@@ -1,6 +1,5 @@
 using App.Application.Users;
 using App.Infrastructure.Translations;
-using Polly;
 
 namespace App.Infrastructure.Integration.Usos.Students;
 
