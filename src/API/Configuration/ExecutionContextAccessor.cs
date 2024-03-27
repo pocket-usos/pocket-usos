@@ -36,5 +36,21 @@ public class ExecutionContextAccessor(IHttpContextAccessor httpContextAccessor) 
         }
     }
 
+    public string Host
+    {
+        get
+        {
+            if (IsAvailable)
+            {
+                var scheme = httpContextAccessor.HttpContext!.Request.Scheme;
+                var host = httpContextAccessor.HttpContext!.Request.Host;
+
+                return $"{scheme}://{host}";
+            }
+
+            throw new ApplicationException("Http Context is not available");
+        }
+    }
+
     public bool IsAvailable => httpContextAccessor.HttpContext != null;
 }
