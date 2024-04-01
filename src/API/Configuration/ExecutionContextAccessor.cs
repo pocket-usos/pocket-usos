@@ -5,6 +5,8 @@ namespace App.API.Configuration;
 
 public class ExecutionContextAccessor(IHttpContextAccessor httpContextAccessor) : IExecutionContextAccessor
 {
+    private Guid? _sessionId;
+
     public Guid SessionId
     {
         get
@@ -12,10 +14,21 @@ public class ExecutionContextAccessor(IHttpContextAccessor httpContextAccessor) 
             if (IsAvailable && httpContextAccessor.HttpContext!.Request.Headers.Keys.Any(
                     x => x.ToLower() == CustomHeaders.SessionId.ToLower()))
             {
-                return Guid.Parse(httpContextAccessor.HttpContext.Request.Headers[CustomHeaders.SessionId].ToString());
+                _sessionId = Guid.Parse(httpContextAccessor.HttpContext.Request.Headers[CustomHeaders.SessionId].ToString());
+
+                return _sessionId.Value;
+            }
+
+            if (_sessionId is not null)
+            {
+                return _sessionId.Value;
             }
 
             throw new NotAuthenticatedException("Profile is not authenticated");
+        }
+        set
+        {
+            _sessionId = value;
         }
     }
 

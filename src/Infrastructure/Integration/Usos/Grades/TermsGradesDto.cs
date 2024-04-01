@@ -28,6 +28,8 @@ public class GradeDto
     public required string DateAcquisition { get; set; }
 
     public required ModificationAuthorDto? ModificationAuthor { get; set; }
+
+    public UnitDto? Unit { get; set; }
 }
 
 public class ModificationAuthorDto
@@ -37,4 +39,11 @@ public class ModificationAuthorDto
     public required string FirstName { get; set; }
 
     public required string LastName { get; set; }
+}
+
+public class UnitDto
+{
+    public required IDictionary<string, string> CourseName { get; set; }
+
+    public required string TermId { get; set; }
 }

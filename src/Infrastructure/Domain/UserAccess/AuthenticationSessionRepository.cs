@@ -40,6 +40,11 @@ public class AuthenticationSessionRepository(Context context) : IAuthenticationS
         return _cachedAuthenticationSession = await context.AuthenticationSessions.SingleOrDefaultAsync(s => s.Id == id);
     }
 
+    public async Task<AuthenticationSession?> GetByUserIdOrDefaultAsync(string userId)
+    {
+        return await context.AuthenticationSessions.FirstOrDefaultAsync(s => s.UserId == userId);
+    }
+
     public async Task RemoveAsync(AuthenticationSessionId authenticationSessionId)
     {
         var authenticationSession = await context.AuthenticationSessions.FindAsync(authenticationSessionId);

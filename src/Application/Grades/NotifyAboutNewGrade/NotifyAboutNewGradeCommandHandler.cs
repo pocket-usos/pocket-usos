@@ -1,0 +1,46 @@
+using App.Application.Configuration.Commands;
+using App.Domain.Notifications;
+using App.Domain.UserAccess.Authentication;
+
+namespace App.Application.Grades.NotifyAboutNewGrade;
+
+public class NotifyAboutNewGradeCommandHandler(
+    IAuthenticationSessionRepository authenticationSessionRepository,
+    IGradesRepository gradesRepository,
+    INotificationRepository notificationRepository) : ICommandHandler<NotifyAboutNewGradeCommand>
+{
+    public async Task Handle(NotifyAboutNewGradeCommand command, CancellationToken cancellationToken)
+    {
+        foreach (var entry in command.NotificationEntries)
+        {
+            foreach (var userId in entry.RelatedUserIds)
+            {
+                var session = await authenticationSessionRepository.GetByUserIdOrDefaultAsync(userId);
+
+                if (session is null) continue;
+
+                try
+                {
+                    var grade = await gradesRepository.GetGrade(session.Id, entry.ExamId, entry.ExamSessionNumber);
+
+                    var notification = new Notification(userId, NotificationType.Grades, GenerateNotificationContent(grade));
+                    await notificationRepository.AddAsync(notification);
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+            }
+        }
+
+        await notificationRepository.SaveAsync();
+    }
+
+    private NotificationContent GenerateNotificationContent(SessionGrade grade)
+    {
+        var englishValue = $"You've received <b>\"{grade.Grade}\"</b> grade from course <b>\"{grade.Unit?.CourseName["en"]}\"</b>.";
+        var polishValue = $"Otrzymałeś ocenę <b>\"{grade.Grade}\"</b> z przedmiotu <b>\"{grade.Unit?.CourseName["pl"]}\"</b>.";
+
+        return new NotificationContent(En: englishValue, Pl: polishValue);
+    }
+}

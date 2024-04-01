@@ -11,11 +11,20 @@ internal abstract class Request(HttpMethod method, Guid institutionId, string pa
 
     public Guid InstitutionId { get; } = institutionId;
 
+    public Guid? SessionId { get; private set; }
+
     private string Path { get; } = path;
 
     private IDictionary<string, object> _queryParameters = new Dictionary<string, object>();
 
     public HttpContent? Content { get; protected set; }
+
+    public Request WithSessionId(Guid sessionId)
+    {
+        SessionId = sessionId;
+
+        return this;
+    }
 
     public Request WithQueryParameter(string key, object value)
     {

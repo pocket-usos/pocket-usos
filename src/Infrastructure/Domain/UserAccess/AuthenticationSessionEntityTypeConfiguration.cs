@@ -14,6 +14,8 @@ public class AuthenticationSessionEntityTypeConfiguration : IEntityTypeConfigura
         builder.Property<AuthenticationSessionId>(s => s.Id).HasColumnName("id");
         builder.Property<InstitutionId>(s => s.InstitutionId).HasColumnName("institution_id");
 
+        builder.Property<string?>(s => s.UserId).HasColumnName("user_id");
+
         builder.ComplexProperty<RequestToken>(s => s.RequestToken, b =>
         {
             b.Property<string>(t => t.Value).HasColumnName("request_token");

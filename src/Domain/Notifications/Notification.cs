@@ -26,7 +26,7 @@ public class Notification
         Type = type;
         Content = content;
         WasRead = false;
-        CreatedAt = DateTime.Now;
+        CreatedAt = DateTime.UtcNow;
     }
 
     private Notification() {}

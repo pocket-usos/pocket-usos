@@ -6,6 +6,8 @@ public class AuthenticationSession
 {
     public AuthenticationSessionId Id { get; private set; }
 
+    public string? UserId { get; private set; }
+
     public InstitutionId InstitutionId { get; private set; }
 
     public RequestToken RequestToken { get; private set; }
@@ -23,6 +25,11 @@ public class AuthenticationSession
     {
         var accessToken = await authenticationService.RetrieveAccessToken(token, RequestToken.Secret, verifier);
         AccessToken = accessToken;
+    }
+
+    public void SetUserId(string userId)
+    {
+        UserId = userId;
     }
 
     private AuthenticationSession(InstitutionId institutionId, RequestToken requestToken)

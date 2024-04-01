@@ -1,6 +1,7 @@
 using App.Application.Configuration;
 using App.Application.Grades;
 using App.Application.Shared;
+using App.Domain.UserAccess.Authentication;
 using App.Infrastructure.Integration.Usos.Courses;
 using App.Infrastructure.Integration.Usos.Grades;
 using App.Infrastructure.Translations;
@@ -56,6 +57,13 @@ public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider c
         return termGrades;
     }
 
+    public async Task<SessionGrade> GetGrade(AuthenticationSessionId sessionId, string examId, int sessionNumber)
+    {
+        var grade = await gradesProvider.GetGrade(sessionId.Value, examId, sessionNumber);
+
+        return CreateSessionGrade(sessionNumber.ToString(), grade, context.Language);
+    }
+
     public async Task<GradesDistributionItem[]> GetGradesDistribution(string examId)
     {
         var gradesDistributionDto = await gradesProvider.GetExamGradesDistribution(examId);
@@ -83,6 +91,16 @@ public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider c
             };
         }
 
+        Unit? unit = null;
+        if (grade.Unit is not null)
+        {
+            unit = new Unit
+            {
+                CourseName = grade.Unit.CourseName,
+                TermId = grade.Unit.TermId
+            };
+        }
+
         var sessionGrade = new SessionGrade
         {
             SessionNumber = sessionNumber,
@@ -95,6 +113,7 @@ public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider c
             GradeTypeId = grade.GradeTypeId,
             ModifiedAt = isModifiedAt ? modifiedAt : null,
             ModifiedBy = modifiedBy,
+            Unit = unit
         };
         return sessionGrade;
     }

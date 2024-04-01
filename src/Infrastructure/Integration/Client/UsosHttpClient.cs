@@ -33,7 +33,16 @@ internal class UsosHttpClient(
         }
         else
         {
-            var authorizationHeader = await authenticationHeaderProvider.GetAuthorizationHeader(new AuthenticationSessionId(executionContextAccessor.SessionId), requestFullUrl);
+            string authorizationHeader;
+            if (request.SessionId is not null)
+            {
+                authorizationHeader = await authenticationHeaderProvider.GetAuthorizationHeader(new AuthenticationSessionId(request.SessionId.Value), requestFullUrl);
+            }
+            else
+            {
+                authorizationHeader = await authenticationHeaderProvider.GetAuthorizationHeader(new AuthenticationSessionId(executionContextAccessor.SessionId), requestFullUrl);
+            }
+
             httpRequestMessage.Headers.Add(HeaderName.Authorization, authorizationHeader);
         }
 
