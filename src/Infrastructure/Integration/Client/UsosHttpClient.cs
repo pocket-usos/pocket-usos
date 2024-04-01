@@ -1,4 +1,5 @@
 using App.Application.Configuration;
+using App.Domain.Institutions;
 using App.Domain.UserAccess.Authentication;
 using App.Infrastructure.Integration.Requests;
 using App.Infrastructure.Integration.Responses;
@@ -6,30 +7,33 @@ using Serilog;
 
 namespace App.Infrastructure.Integration.Client;
 
-internal class UsosHttpClient(HttpClient httpClient, ILogger logger, AuthenticationHeaderProvider authenticationHeaderProvider, IExecutionContextAccessor executionContextAccessor) : IUsosHttpClient
+internal class UsosHttpClient(
+    HttpClient httpClient,
+    ILogger logger,
+    AuthenticationHeaderProvider authenticationHeaderProvider,
+    IExecutionContextAccessor executionContextAccessor,
+    IInstitutionRepository institutionRepository) : IUsosHttpClient
 {
     public async Task<Response> SendAsync(Request request)
     {
-        var httpRequestMessage = new HttpRequestMessage(
-            request.Method,
-            request.GetFullUrl())
+        var requestFullUrl = await GetBaseUrl(request.InstitutionId) + request.GetFullUrl();
+
+        var httpRequestMessage = new HttpRequestMessage(request.Method, requestFullUrl)
         {
             Content = request.Content
         };
 
-        var requestFullUrl = httpClient.BaseAddress + request.GetFullUrl();
-
         if (request is AccessTokenRequest accessTokenRequest)
         {
-            httpRequestMessage.Headers.Add(HeaderName.Authorization, authenticationHeaderProvider.GetAuthorizationHeader(requestFullUrl, new AccessTokenRequestWithVerifier(accessTokenRequest.Token, accessTokenRequest.Secret, accessTokenRequest.Verifier)));
+            httpRequestMessage.Headers.Add(HeaderName.Authorization, authenticationHeaderProvider.GetAuthorizationHeader(request.InstitutionId, requestFullUrl, new AccessTokenRequestWithVerifier(accessTokenRequest.Token, accessTokenRequest.Secret, accessTokenRequest.Verifier)));
         }
         else if (request is RequestTokenRequest)
         {
-            httpRequestMessage.Headers.Add(HeaderName.Authorization, authenticationHeaderProvider.GetAuthorizationHeader(requestFullUrl));
+            httpRequestMessage.Headers.Add(HeaderName.Authorization, authenticationHeaderProvider.GetAuthorizationHeader(request.InstitutionId, requestFullUrl));
         }
         else
         {
-            var authorizationHeader = await authenticationHeaderProvider.GetAuthorizationHeader(new AuthenticationSessionId(executionContextAccessor.SessionId),requestFullUrl);
+            var authorizationHeader = await authenticationHeaderProvider.GetAuthorizationHeader(new AuthenticationSessionId(executionContextAccessor.SessionId), requestFullUrl);
             httpRequestMessage.Headers.Add(HeaderName.Authorization, authorizationHeader);
         }
 
@@ -54,5 +58,12 @@ internal class UsosHttpClient(HttpClient httpClient, ILogger logger, Authenticat
         }
 
         return await Response.From(httpResponseMessage);
+    }
+
+    private async Task<string> GetBaseUrl(Guid institutionId)
+    {
+        var institution = await institutionRepository.GetByIdAsync(new InstitutionId(institutionId));
+
+        return institution.BaseUrl;
     }
 }

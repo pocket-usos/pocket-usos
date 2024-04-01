@@ -12,11 +12,11 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace App.Infrastructure.Integration.Usos;
 
-internal class Usos(IUsosHttpClient client, IExecutionContextAccessor context, ICacheProvider cache) : IAuthenticationService, IUsersProvider, IGradesProvider, ICoursesProvider, ITimeTableProvider, ITermsProvider
+internal class Usos(IUsosHttpClient client, IExecutionContextAccessor context, IAuthenticationSessionRepository authenticationSessionRepository, ICacheProvider cache) : IAuthenticationService, IUsersProvider, IGradesProvider, ICoursesProvider, ITimeTableProvider, ITermsProvider
 {
-    public async Task<RequestToken> RetrieveRequestToken()
+    public async Task<RequestToken> RetrieveRequestToken(Guid institutionId)
     {
-        var request = Request.RequestToken("services/oauth/request_token")
+        var request = Request.RequestToken(institutionId, "services/oauth/request_token")
             .WithQueryParameter("scopes", String.Join('|', Scope.AllValues));
 
         var response = await client.SendAsync(request);
@@ -34,7 +34,9 @@ internal class Usos(IUsosHttpClient client, IExecutionContextAccessor context, I
 
     public async Task<AccessToken> RetrieveAccessToken(string token, string tokenSecret, string verifier)
     {
-        var request = Request.AccessToken("services/oauth/access_token", token, tokenSecret, verifier);
+        var session = await authenticationSessionRepository.GetByIdAsync(new AuthenticationSessionId(context.SessionId));
+
+        var request = Request.AccessToken(session.InstitutionId.Value, "services/oauth/access_token", token, tokenSecret, verifier);
 
         var response = await client.SendAsync(request);
 
@@ -51,9 +53,9 @@ internal class Usos(IUsosHttpClient client, IExecutionContextAccessor context, I
 
     public async Task<UserDto> GetUser(string? id = null)
     {
+        var session = await authenticationSessionRepository.GetByIdAsync(new AuthenticationSessionId(context.SessionId));
 
-
-        var request = Request.Get("services/users/user")
+        var request = Request.Get(session.InstitutionId.Value, "services/users/user")
             .WithQueryParameter("fields",
                 "id|first_name|last_name|sex|student_status|email|phone_numbers|mobile_numbers|photo_urls|student_number|pesel|birth_date|citizenship|student_programmes|postal_addresses|library_card_id|titles|office_hours|course_editions_conducted");
 
@@ -74,7 +76,9 @@ internal class Usos(IUsosHttpClient client, IExecutionContextAccessor context, I
 
     public async Task<IDictionary<string, UserDto>> GetMultipleUsers(string[] ids)
     {
-        var request = Request.Get("services/users/users")
+        var session = await authenticationSessionRepository.GetByIdAsync(new AuthenticationSessionId(context.SessionId));
+
+        var request = Request.Get(session.InstitutionId.Value, "services/users/users")
             .WithQueryParameter("fields", "id|first_name|last_name|sex|student_status|email|phone_numbers|mobile_numbers|photo_urls|student_number|pesel|birth_date|citizenship|student_programmes|postal_addresses|library_card_id|titles|office_hours|course_editions_conducted")
             .WithQueryParameter("user_ids", String.Join('|', ids));
 
@@ -97,7 +101,9 @@ internal class Usos(IUsosHttpClient client, IExecutionContextAccessor context, I
             return grades;
         }
 
-        var request = Request.Get("services/grades/terms2")
+        var session = await authenticationSessionRepository.GetByIdAsync(new AuthenticationSessionId(context.SessionId));
+
+        var request = Request.Get(session.InstitutionId.Value, "services/grades/terms2")
             .WithQueryParameter("term_ids", term)
             .WithQueryParameter("fields", "value_symbol|passes|value_description|exam_id|exam_session_number|counts_into_average|comment|grade_type_id|date_modified|date_acquisition|modification_author");
 
@@ -127,7 +133,9 @@ internal class Usos(IUsosHttpClient client, IExecutionContextAccessor context, I
             return gradesDistribution;
         }
 
-        var request = Request.Get("services/examrep/exam")
+        var session = await authenticationSessionRepository.GetByIdAsync(new AuthenticationSessionId(context.SessionId));
+
+        var request = Request.Get(session.InstitutionId.Value, "services/examrep/exam")
             .WithQueryParameter("id", examId)
             .WithQueryParameter("fields", "grades_distribution");
 
@@ -157,7 +165,9 @@ internal class Usos(IUsosHttpClient client, IExecutionContextAccessor context, I
             return course;
         }
 
-        var request = Request.Get("services/courses/course")
+        var session = await authenticationSessionRepository.GetByIdAsync(new AuthenticationSessionId(context.SessionId));
+
+        var request = Request.Get(session.InstitutionId.Value, "services/courses/course")
             .WithQueryParameter("course_id", id);
 
         var response = await client.SendAsync(request);
@@ -186,7 +196,9 @@ internal class Usos(IUsosHttpClient client, IExecutionContextAccessor context, I
             return courseEdition;
         }
 
-        var request = Request.Get("services/courses/course_edition")
+        var session = await authenticationSessionRepository.GetByIdAsync(new AuthenticationSessionId(context.SessionId));
+
+        var request = Request.Get(session.InstitutionId.Value, "services/courses/course_edition")
             .WithQueryParameter("course_id", courseId)
             .WithQueryParameter("term_id", termId);
 
@@ -216,7 +228,9 @@ internal class Usos(IUsosHttpClient client, IExecutionContextAccessor context, I
             return courseUnitTypeId;
         }
 
-        var request = Request.Get("services/courses/unit")
+        var session = await authenticationSessionRepository.GetByIdAsync(new AuthenticationSessionId(context.SessionId));
+
+        var request = Request.Get(session.InstitutionId.Value, "services/courses/unit")
             .WithQueryParameter("unit_id", id)
             .WithQueryParameter("fields", "classtype_id");
 
@@ -246,7 +260,9 @@ internal class Usos(IUsosHttpClient client, IExecutionContextAccessor context, I
             return courseUnitTermId;
         }
 
-        var request = Request.Get("services/courses/unit")
+        var session = await authenticationSessionRepository.GetByIdAsync(new AuthenticationSessionId(context.SessionId));
+
+        var request = Request.Get(session.InstitutionId.Value, "services/courses/unit")
             .WithQueryParameter("unit_id", id)
             .WithQueryParameter("fields", "term_id");
 
@@ -276,7 +292,9 @@ internal class Usos(IUsosHttpClient client, IExecutionContextAccessor context, I
             return classTypes;
         }
 
-        var request = Request.Get("services/courses/classtypes_index");
+        var session = await authenticationSessionRepository.GetByIdAsync(new AuthenticationSessionId(context.SessionId));
+
+        var request = Request.Get(session.InstitutionId.Value, "services/courses/classtypes_index");
 
         var response = await client.SendAsync(request);
 
@@ -304,7 +322,9 @@ internal class Usos(IUsosHttpClient client, IExecutionContextAccessor context, I
             return userCourses;
         }
 
-        var request = Request.Get("services/courses/user")
+        var session = await authenticationSessionRepository.GetByIdAsync(new AuthenticationSessionId(context.SessionId));
+
+        var request = Request.Get(session.InstitutionId.Value, "services/courses/user")
             .WithQueryParameter("fields", "course_editions|terms");
 
         var response = await client.SendAsync(request);
@@ -333,7 +353,9 @@ internal class Usos(IUsosHttpClient client, IExecutionContextAccessor context, I
             return courseSchedule;
         }
 
-        var request = Request.Get("services/tt/classgroup_dates2")
+        var session = await authenticationSessionRepository.GetByIdAsync(new AuthenticationSessionId(context.SessionId));
+
+        var request = Request.Get(session.InstitutionId.Value, "services/tt/classgroup_dates2")
             .WithQueryParameter("unit_id", courseUnitId)
             .WithQueryParameter("group_number", groupNumber);
 
@@ -363,7 +385,9 @@ internal class Usos(IUsosHttpClient client, IExecutionContextAccessor context, I
             return timeTable;
         }
 
-        var request = Request.Get("services/tt/user")
+        var session = await authenticationSessionRepository.GetByIdAsync(new AuthenticationSessionId(context.SessionId));
+
+        var request = Request.Get(session.InstitutionId.Value, "services/tt/user")
             .WithQueryParameter("fields",
                 "start_time|end_time|name|course_id|course_name|classtype_id|classtype_name|lecturer_ids|group_number|building_name|building_id|room_number|room_id|unit_id|classtype_id|cgwm_id|frequency")
             .WithQueryParameter("start", start.ToString("yyyy-MM-dd"))
@@ -395,7 +419,9 @@ internal class Usos(IUsosHttpClient client, IExecutionContextAccessor context, I
             return timeTable;
         }
 
-        var request = Request.Get("services/tt/staff")
+        var session = await authenticationSessionRepository.GetByIdAsync(new AuthenticationSessionId(context.SessionId));
+
+        var request = Request.Get(session.InstitutionId.Value, "services/tt/staff")
             .WithQueryParameter("user_id", userId)
             .WithQueryParameter("fields",
                 "start_time|end_time|name|course_id|course_name|classtype_id|classtype_name|lecturer_ids|group_number|building_name|building_id|room_number|room_id|unit_id|classtype_id|cgwm_id|frequency")
@@ -428,7 +454,9 @@ internal class Usos(IUsosHttpClient client, IExecutionContextAccessor context, I
             return terms;
         }
 
-        var request = Request.Get("services/courses/user")
+        var session = await authenticationSessionRepository.GetByIdAsync(new AuthenticationSessionId(context.SessionId));
+
+        var request = Request.Get(session.InstitutionId.Value, "services/courses/user")
             .WithQueryParameter("fields", "terms");
 
         var response = await client.SendAsync(request);

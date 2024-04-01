@@ -1,3 +1,4 @@
+using App.Domain.Institutions;
 using App.Domain.UserAccess.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -11,6 +12,7 @@ public class AuthenticationSessionEntityTypeConfiguration : IEntityTypeConfigura
         builder.ToTable("authentication_sessions");
         builder.HasKey(s => s.Id);
         builder.Property<AuthenticationSessionId>(s => s.Id).HasColumnName("id");
+        builder.Property<InstitutionId>(s => s.InstitutionId).HasColumnName("institution_id");
 
         builder.ComplexProperty<RequestToken>(s => s.RequestToken, b =>
         {

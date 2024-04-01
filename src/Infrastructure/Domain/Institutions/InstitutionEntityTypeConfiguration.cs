@@ -13,7 +13,9 @@ public class InstitutionEntityTypeConfiguration : IEntityTypeConfiguration<Insti
         builder.Property<InstitutionId>(i => i.Id).HasColumnName("id");
 
         builder.Property<string>(i => i.BaseUrl).HasColumnName("base_url");
+        builder.Property<string?>(i => i.LogoPath).HasColumnName("logo_path");
         builder.Property(i => i.IsEnabled).HasColumnName("is_enabled");
+        builder.Property(i => i.IsBeta).HasColumnName("is_beta");
 
         builder.ComplexProperty<InstitutionName>(i => i.Name, b =>
         {
