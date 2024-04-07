@@ -58,6 +58,15 @@ public class Program
         app.UseHttpsRedirection();
         app.UseRouting();
 
+        var cacheMaxAgeOneWeek = (60 * 60 * 24 * 7).ToString();
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            OnPrepareResponse = ctx =>
+            {
+                ctx.Context.Response.Headers.Append("Cache-Control", $"public, max-age={cacheMaxAgeOneWeek}");
+            },
+        });
+
         var localizationOptions = new RequestLocalizationOptions { ApplyCurrentCultureToResponseHeaders = true }
             .SetDefaultCulture(SupportedCultures.Default)
             .AddSupportedCultures(SupportedCultures.All)

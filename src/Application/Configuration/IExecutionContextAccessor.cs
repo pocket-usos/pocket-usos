@@ -6,5 +6,7 @@ public interface IExecutionContextAccessor
 
     string Language { get; }
 
+    string Host { get; }
+
     bool IsAvailable { get; }
 }

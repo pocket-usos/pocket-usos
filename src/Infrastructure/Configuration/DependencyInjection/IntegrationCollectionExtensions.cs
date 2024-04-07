@@ -1,4 +1,3 @@
-using App.Application.Configuration;
 using App.Domain.UserAccess.Authentication;
 using App.Infrastructure.Configuration.DataAccess;
 using App.Infrastructure.Integration.Client;
@@ -24,8 +23,8 @@ public static class IntegrationCollectionExtensions
     public static IServiceCollection AddIntegration(this IServiceCollection services, IConfiguration configuration)
     {
         var clientConfiguration = configuration.GetSection("Usos").Get<UsosClientConfiguration>()!;
-        var usosConfiguration = configuration.GetSection("Usos").Get<UsosConfiguration>()!;
 
+<<<<<<< HEAD
         services.AddHttpClient<UsosHttpClient>(client =>
         {
             client.BaseAddress = new Uri(clientConfiguration.BaseUrl);
@@ -45,6 +44,14 @@ public static class IntegrationCollectionExtensions
 
         services.AddSingleton(clientConfiguration);
         services.AddSingleton(usosConfiguration);
+=======
+        services.AddHttpClient<IUsosHttpClient, UsosHttpClient>()
+            .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+            .AddPolicyHandler(GetRetryPolicy());
+
+        services.AddSingleton(clientConfiguration);
+        services.AddScoped<AuthenticationHeaderProvider>();
+>>>>>>> 59eade041b1a63306aa0017932f7ef66580717b2
 
         services.AddScoped<IAuthenticationService, UsosAuthenticationService>();
         services.AddScoped<IUsersProvider, UsosUsersProvider>();

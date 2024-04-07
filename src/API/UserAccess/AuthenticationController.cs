@@ -14,9 +14,9 @@ public class AuthenticationController(IGateway gateway, IExecutionContextAccesso
 {
     [HttpPost("sessions")]
     [ProducesResponseType(typeof(AuthenticationSessionInitialisationResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> InitialiseSession()
+    public async Task<IActionResult> InitialiseSession([FromQuery] InitialiseAuthenticationSessionRequest request)
     {
-        var result = await gateway.ExecuteCommandAsync(new InitialiseAuthenticationSessionCommand());
+        var result = await gateway.ExecuteCommandAsync(new InitialiseAuthenticationSessionCommand(request.InstitutionId));
 
         return Ok(result);
     }

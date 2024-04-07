@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using App.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace App.Infrastructure.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20240326112905_AddNotificationType")]
+    partial class AddNotificationType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,17 +37,9 @@ namespace App.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("base_url");
 
-                    b.Property<bool>("IsBeta")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_beta");
-
                     b.Property<bool>("IsEnabled")
                         .HasColumnType("boolean")
                         .HasColumnName("is_enabled");
-
-                    b.Property<string>("LogoPath")
-                        .HasColumnType("text")
-                        .HasColumnName("logo_path");
 
                     b.ComplexProperty<Dictionary<string, object>>("Name", "App.Domain.Institutions.Institution.Name#InstitutionName", b1 =>
                         {
@@ -122,10 +117,6 @@ namespace App.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
                         .HasColumnName("id");
-
-                    b.Property<Guid>("InstitutionId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("institution_id");
 
                     b.ComplexProperty<Dictionary<string, object>>("RequestToken", "App.Domain.UserAccess.Authentication.AuthenticationSession.RequestToken#RequestToken", b1 =>
                         {
