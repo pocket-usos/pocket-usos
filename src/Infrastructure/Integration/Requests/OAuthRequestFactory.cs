@@ -1,15 +1,23 @@
 ﻿using App.Application.Configuration;
+using App.Domain.Institutions;
 using App.Domain.UserAccess.Authentication;
 using App.Infrastructure.Integration.Configuration;
 using OAuth;
 
 namespace App.Infrastructure.Integration.Requests;
 
-internal class OAuthRequestFactory(UsosClientConfiguration configuration, IExecutionContextAccessor context, IAuthenticationSessionRepository authenticationSessionRepository) : IAuthorizedRequestFactory
+internal class OAuthRequestFactory(UsosClientConfiguration configuration, IExecutionContextAccessor context, IAuthenticationSessionRepository authenticationSessionRepository, IInstitutionRepository institutionRepository) : IAuthorizedRequestFactory
 {
-    public Request CreateAccessTokenRequest(string path, string requestToken, string requestTokenSecret, string verifier, Action<Request>? configureRequest = null)
+    public async Task<Request> CreateAccessTokenRequestAsync(string path, string requestToken, string requestTokenSecret, string verifier, Action<Request>? configureRequest = null)
     {
-        var request = Request.Post(path);
+        var sessionId = new AuthenticationSessionId(context.SessionId);
+        var session = await authenticationSessionRepository.GetByIdAsync(sessionId);
+
+        var institutionConfiguration = configuration.Institutions[session.InstitutionId.ToString()];
+        var institution = await institutionRepository.GetByIdAsync(session.InstitutionId);
+
+        var fullPath = institution.BaseUrl + path;
+        var request = Request.Post(fullPath);
         configureRequest?.Invoke(request);
 
         var oauthRequest = new OAuthRequest
@@ -17,9 +25,9 @@ internal class OAuthRequestFactory(UsosClientConfiguration configuration, IExecu
             Method = "POST",
             Type = OAuthRequestType.AccessToken,
             SignatureMethod = OAuthSignatureMethod.HmacSha1,
-            ConsumerKey = configuration.ConsumerKey,
-            ConsumerSecret = configuration.ConsumerSecret,
-            RequestUrl = configuration.BaseUrl + request.GetFullUrl(),
+            ConsumerKey = institutionConfiguration.ConsumerKey,
+            ConsumerSecret = institutionConfiguration.ConsumerSecret,
+            RequestUrl = request.GetFullUrl(),
             Version = "1.0",
             Token = requestToken,
             TokenSecret = requestTokenSecret,
@@ -32,9 +40,13 @@ internal class OAuthRequestFactory(UsosClientConfiguration configuration, IExecu
         return request;
     }
 
-    public Request CreateRequestTokenRequest(string path, Action<Request>? configureRequest = null)
+    public async Task<Request> CreateRequestTokenRequestAsync(Guid institutionId, string path, Action<Request>? configureRequest = null)
     {
-        var request = Request.Post(path);
+        var institutionConfiguration = configuration.Institutions[institutionId.ToString()];
+        var institution = await institutionRepository.GetByIdAsync(new InstitutionId(institutionId));
+
+        var fullPath = institution.BaseUrl + path;
+        var request = Request.Post(fullPath);
         configureRequest?.Invoke(request);
 
         var oauthRequest = new OAuthRequest
@@ -42,9 +54,9 @@ internal class OAuthRequestFactory(UsosClientConfiguration configuration, IExecu
             Method = "POST",
             Type = OAuthRequestType.RequestToken,
             SignatureMethod = OAuthSignatureMethod.HmacSha1,
-            ConsumerKey = configuration.ConsumerKey,
-            ConsumerSecret = configuration.ConsumerSecret,
-            RequestUrl = configuration.BaseUrl + request.GetFullUrl(),
+            ConsumerKey = institutionConfiguration.ConsumerKey,
+            ConsumerSecret = institutionConfiguration.ConsumerSecret,
+            RequestUrl = request.GetFullUrl(),
             Version = "1.0",
             CallbackUrl = configuration.CallbackUrl,
         };
@@ -57,20 +69,24 @@ internal class OAuthRequestFactory(UsosClientConfiguration configuration, IExecu
 
     public async Task<Request> CreateGetRequestAsync(string path, Action<Request>? configureRequest = null)
     {
-        var request = Request.Get(path);
-        configureRequest?.Invoke(request);
-
         var sessionId = new AuthenticationSessionId(context.SessionId);
         var session = await authenticationSessionRepository.GetByIdAsync(sessionId);
+
+        var institutionConfiguration = configuration.Institutions[session.InstitutionId.ToString()];
+        var institution = await institutionRepository.GetByIdAsync(session.InstitutionId);
+
+        var fullPath = institution.BaseUrl + path;
+        var request = Request.Get(fullPath);
+        configureRequest?.Invoke(request);
 
         var oauthRequest = new OAuthRequest
         {
             Method = "GET",
             Type = OAuthRequestType.RequestToken,
             SignatureMethod = OAuthSignatureMethod.HmacSha1,
-            ConsumerKey = configuration.ConsumerKey,
-            ConsumerSecret = configuration.ConsumerSecret,
-            RequestUrl = path,
+            ConsumerKey = institutionConfiguration.ConsumerKey,
+            ConsumerSecret = institutionConfiguration.ConsumerSecret,
+            RequestUrl = request.GetFullUrl(),
             Version = "1.0",
             Token = session.AccessToken?.Value,
             TokenSecret = session.AccessToken?.Secret

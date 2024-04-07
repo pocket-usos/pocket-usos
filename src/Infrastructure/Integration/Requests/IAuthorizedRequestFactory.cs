@@ -2,7 +2,7 @@
 
 internal interface IAuthorizedRequestFactory
 {
-    Request CreateAccessTokenRequest(string path, string requestToken, string requestTokenSecret, string verifier, Action<Request>? configureRequest = null);
-    Request CreateRequestTokenRequest(string path, Action<Request>? configureRequest = null);
+    Task<Request> CreateAccessTokenRequestAsync(string path, string requestToken, string requestTokenSecret, string verifier, Action<Request>? configureRequest = null);
+    Task<Request> CreateRequestTokenRequestAsync(Guid institutionId, string path, Action<Request>? configureRequest = null);
     Task<Request> CreateGetRequestAsync(string path, Action<Request>? configureRequest = null);
 }

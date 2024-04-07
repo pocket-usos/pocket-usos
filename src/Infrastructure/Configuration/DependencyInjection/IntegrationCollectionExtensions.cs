@@ -1,9 +1,9 @@
+using App.Application.Configuration;
 using App.Domain.UserAccess.Authentication;
 using App.Infrastructure.Configuration.DataAccess;
 using App.Infrastructure.Integration.Client;
 using App.Infrastructure.Integration.Configuration;
 using App.Infrastructure.Integration.Requests;
-using App.Infrastructure.Integration.Usos;
 using App.Infrastructure.Integration.Usos.Authentication;
 using App.Infrastructure.Integration.Usos.Courses;
 using App.Infrastructure.Integration.Usos.Grades;
@@ -24,13 +24,9 @@ public static class IntegrationCollectionExtensions
     {
         var clientConfiguration = configuration.GetSection("Usos").Get<UsosClientConfiguration>()!;
 
-<<<<<<< HEAD
-        services.AddHttpClient<UsosHttpClient>(client =>
-        {
-            client.BaseAddress = new Uri(clientConfiguration.BaseUrl);
-        })
-        .SetHandlerLifetime(TimeSpan.FromMinutes(5))
-        .AddPolicyHandler(GetRetryPolicy());
+        services.AddHttpClient<UsosHttpClient>()
+            .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+            .AddPolicyHandler(GetRetryPolicy());
 
         services.AddScoped<IUsosHttpClient>(provider =>
         {
@@ -43,15 +39,6 @@ public static class IntegrationCollectionExtensions
         services.AddScoped<IAuthorizedRequestFactory, OAuthRequestFactory>();
 
         services.AddSingleton(clientConfiguration);
-        services.AddSingleton(usosConfiguration);
-=======
-        services.AddHttpClient<IUsosHttpClient, UsosHttpClient>()
-            .SetHandlerLifetime(TimeSpan.FromMinutes(5))
-            .AddPolicyHandler(GetRetryPolicy());
-
-        services.AddSingleton(clientConfiguration);
-        services.AddScoped<AuthenticationHeaderProvider>();
->>>>>>> 59eade041b1a63306aa0017932f7ef66580717b2
 
         services.AddScoped<IAuthenticationService, UsosAuthenticationService>();
         services.AddScoped<IUsersProvider, UsosUsersProvider>();

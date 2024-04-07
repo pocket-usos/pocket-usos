@@ -9,7 +9,7 @@ internal class UsosAuthenticationService(IUsosHttpClient client, IAuthorizedRequ
 {
     public async Task<AccessToken> RetrieveAccessToken(string token, string tokenSecret, string verifier)
     {
-        var request = requestFactory.CreateAccessTokenRequest("services/oauth/access_token", token, tokenSecret, verifier);
+        var request = await requestFactory.CreateAccessTokenRequestAsync("services/oauth/access_token", token, tokenSecret, verifier);
 
         var response = await client.SendAsync(request);
 
@@ -24,9 +24,10 @@ internal class UsosAuthenticationService(IUsosHttpClient client, IAuthorizedRequ
         return new AccessToken(form["oauth_token"]!, form["oauth_token_secret"]!);
     }
 
-    public async Task<RequestToken> RetrieveRequestToken()
+    public async Task<RequestToken> RetrieveRequestToken(Guid institutionId)
     {
-        var request = requestFactory.CreateRequestTokenRequest(
+        var request = await requestFactory.CreateRequestTokenRequestAsync(
+            institutionId,
             "services/oauth/request_token",
             r => r.WithQueryParameter("scopes", String.Join('|', Scope.AllValues)));
 
