@@ -4,13 +4,12 @@ using App.Infrastructure.Integration.Requests;
 
 namespace App.Infrastructure.Integration.Usos.Students;
 
-internal class UsosUsersProvider(IUsosHttpClient client, IExecutionContextAccessor context) : IUsersProvider
+internal class UsosUsersProvider(IUsosHttpClient client, IAuthorizedRequestFactory requestFactory, IExecutionContextAccessor context) : IUsersProvider
 {
     public async Task<UserDto> GetUser(string? id = null)
     {
-        var request = Request.Get("services/users/user")
-            .WithQueryParameter("fields",
-                "id|first_name|last_name|sex|student_status|email|phone_numbers|mobile_numbers|photo_urls|student_number|pesel|birth_date|citizenship|student_programmes|postal_addresses|library_card_id|titles|office_hours|course_editions_conducted");
+        var request = await requestFactory.CreateGetRequestAsync("services/users/user",
+            r => r.WithQueryParameter("fields", "id|first_name|last_name|sex|student_status|email|phone_numbers|mobile_numbers|photo_urls|student_number|pesel|birth_date|citizenship|student_programmes|postal_addresses|library_card_id|titles|office_hours|course_editions_conducted"));
 
         if (id is not null)
         {
@@ -29,9 +28,9 @@ internal class UsosUsersProvider(IUsosHttpClient client, IExecutionContextAccess
 
     public async Task<IDictionary<string, UserDto>> GetMultipleUsers(string[] ids)
     {
-        var request = Request.Get("services/users/users")
-            .WithQueryParameter("fields", "id|first_name|last_name|sex|student_status|email|phone_numbers|mobile_numbers|photo_urls|student_number|pesel|birth_date|citizenship|student_programmes|postal_addresses|library_card_id|titles|office_hours|course_editions_conducted")
-            .WithQueryParameter("user_ids", String.Join('|', ids));
+        var request = await requestFactory.CreateGetRequestAsync("services/users/users",
+            r => r.WithQueryParameter("fields", "id|first_name|last_name|sex|student_status|email|phone_numbers|mobile_numbers|photo_urls|student_number|pesel|birth_date|citizenship|student_programmes|postal_addresses|library_card_id|titles|office_hours|course_editions_conducted")
+                  .WithQueryParameter("user_ids", String.Join('|', ids)));
 
         var response = await client.SendAsync(request);
 

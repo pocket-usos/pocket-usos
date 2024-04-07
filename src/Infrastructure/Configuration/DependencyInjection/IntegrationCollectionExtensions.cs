@@ -3,6 +3,7 @@ using App.Domain.UserAccess.Authentication;
 using App.Infrastructure.Configuration.DataAccess;
 using App.Infrastructure.Integration.Client;
 using App.Infrastructure.Integration.Configuration;
+using App.Infrastructure.Integration.Requests;
 using App.Infrastructure.Integration.Usos;
 using App.Infrastructure.Integration.Usos.Authentication;
 using App.Infrastructure.Integration.Usos.Courses;
@@ -14,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Polly.Extensions.Http;
+using Serilog;
 
 namespace App.Infrastructure.Configuration.DependencyInjection;
 
@@ -24,16 +26,25 @@ public static class IntegrationCollectionExtensions
         var clientConfiguration = configuration.GetSection("Usos").Get<UsosClientConfiguration>()!;
         var usosConfiguration = configuration.GetSection("Usos").Get<UsosConfiguration>()!;
 
-        services.AddHttpClient<IUsosHttpClient, UsosHttpClient>(client =>
-            {
-                client.BaseAddress = new Uri(clientConfiguration.BaseUrl);
-            })
-            .SetHandlerLifetime(TimeSpan.FromMinutes(5))
-            .AddPolicyHandler(GetRetryPolicy());
+        services.AddHttpClient<UsosHttpClient>(client =>
+        {
+            client.BaseAddress = new Uri(clientConfiguration.BaseUrl);
+        })
+        .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+        .AddPolicyHandler(GetRetryPolicy());
+
+        services.AddScoped<IUsosHttpClient>(provider =>
+        {
+            var usosHttpClient = provider.GetRequiredService<UsosHttpClient>();
+            var logger = provider.GetRequiredService<ILogger>();
+
+            return new LoggingUsosHttpClientDecorator(usosHttpClient, logger);
+        });
+
+        services.AddScoped<IAuthorizedRequestFactory, OAuthRequestFactory>();
 
         services.AddSingleton(clientConfiguration);
         services.AddSingleton(usosConfiguration);
-        services.AddScoped<AuthenticationHeaderProvider>();
 
         services.AddScoped<IAuthenticationService, UsosAuthenticationService>();
         services.AddScoped<IUsersProvider, UsosUsersProvider>();

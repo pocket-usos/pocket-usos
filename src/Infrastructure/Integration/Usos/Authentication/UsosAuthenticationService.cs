@@ -5,11 +5,11 @@ using App.Infrastructure.Integration.Requests;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace App.Infrastructure.Integration.Usos.Authentication;
-internal class UsosAuthenticationService(IUsosHttpClient client, IExecutionContextAccessor context) : IAuthenticationService
+internal class UsosAuthenticationService(IUsosHttpClient client, IAuthorizedRequestFactory requestFactory, IExecutionContextAccessor context) : IAuthenticationService
 {
     public async Task<AccessToken> RetrieveAccessToken(string token, string tokenSecret, string verifier)
     {
-        var request = Request.AccessToken("services/oauth/access_token", token, tokenSecret, verifier);
+        var request = requestFactory.CreateAccessTokenRequest("services/oauth/access_token", token, tokenSecret, verifier);
 
         var response = await client.SendAsync(request);
 
@@ -26,8 +26,9 @@ internal class UsosAuthenticationService(IUsosHttpClient client, IExecutionConte
 
     public async Task<RequestToken> RetrieveRequestToken()
     {
-        var request = Request.RequestToken("services/oauth/request_token")
-            .WithQueryParameter("scopes", String.Join('|', Scope.AllValues));
+        var request = requestFactory.CreateRequestTokenRequest(
+            "services/oauth/request_token",
+            r => r.WithQueryParameter("scopes", String.Join('|', Scope.AllValues)));
 
         var response = await client.SendAsync(request);
 
