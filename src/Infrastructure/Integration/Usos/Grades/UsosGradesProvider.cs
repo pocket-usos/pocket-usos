@@ -1,5 +1,4 @@
 ﻿using App.Application.Configuration;
-using App.Infrastructure.Configuration.DataAccess;
 using App.Infrastructure.Integration.Client;
 using App.Infrastructure.Integration.Requests;
 

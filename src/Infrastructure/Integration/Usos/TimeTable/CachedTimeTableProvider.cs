@@ -14,7 +14,7 @@ internal class CachedTimeTableProvider(ITimeTableProvider timeTableProvider, ICa
             return timeTable;
         }
 
-        timeTable = await timeTableProvider.GetStaffTimeTable(userId, start, days);
+        timeTable = (await timeTableProvider.GetStaffTimeTable(userId, start, days)).ToList();
 
         await cache.SetAsync($"usos-staff-{userId}-timetable-{start.ToString("yyyy-MM-dd")}-{days}", timeTable, options =>
         {
@@ -33,7 +33,7 @@ internal class CachedTimeTableProvider(ITimeTableProvider timeTableProvider, ICa
             return timeTable;
         }
 
-        timeTable = await timeTableProvider.GetUserTimeTable(start, days);
+        timeTable = (await timeTableProvider.GetUserTimeTable(start, days)).ToList();
 
         await cache.SetAsync($"usos-user-{context.SessionId}-timetable-{start.ToString("yyyy-MM-dd")}-{days}", timeTable, options =>
         {
@@ -42,4 +42,4 @@ internal class CachedTimeTableProvider(ITimeTableProvider timeTableProvider, ICa
 
         return timeTable;
     }
-}   
+}

@@ -13,7 +13,7 @@ internal class OAuthRequestFactory(UsosClientConfiguration configuration, IExecu
         var sessionId = new AuthenticationSessionId(context.SessionId);
         var session = await authenticationSessionRepository.GetByIdAsync(sessionId);
 
-        var institutionConfiguration = configuration.Institutions[session.InstitutionId.ToString()];
+        var institutionConfiguration = configuration.Institutions[session.InstitutionId.Value.ToString()];
         var institution = await institutionRepository.GetByIdAsync(session.InstitutionId);
 
         var fullPath = institution.BaseUrl + path;
@@ -72,7 +72,7 @@ internal class OAuthRequestFactory(UsosClientConfiguration configuration, IExecu
         var sessionId = new AuthenticationSessionId(context.SessionId);
         var session = await authenticationSessionRepository.GetByIdAsync(sessionId);
 
-        var institutionConfiguration = configuration.Institutions[session.InstitutionId.ToString()];
+        var institutionConfiguration = configuration.Institutions[session.InstitutionId.Value.ToString()];
         var institution = await institutionRepository.GetByIdAsync(session.InstitutionId);
 
         var fullPath = institution.BaseUrl + path;

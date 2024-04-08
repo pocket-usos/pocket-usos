@@ -44,31 +44,31 @@ public static class IntegrationCollectionExtensions
         services.AddScoped<IUsersProvider, UsosUsersProvider>();
 
         services.AddScoped<UsosGradesProvider>();
-        services.AddScoped<IGradesProvider>(services =>
+        services.AddScoped<IGradesProvider>(s =>
         {
-            var gradesProvider = services.GetRequiredService<UsosGradesProvider>();
-            var cache = services.GetRequiredService<ICacheProvider>();
-            var executionContext = services.GetRequiredService<IExecutionContextAccessor>();
+            var gradesProvider = s.GetRequiredService<UsosGradesProvider>();
+            var cache = s.GetRequiredService<ICacheProvider>();
+            var executionContext = s.GetRequiredService<IExecutionContextAccessor>();
 
             return new CachedGradesProvider(gradesProvider, cache, executionContext);
         });
 
         services.AddScoped<UsosCoursesProvider>();
-        services.AddScoped<ICoursesProvider>(services =>
+        services.AddScoped<ICoursesProvider>(s =>
         {
-            var courcesProvider = services.GetRequiredService<UsosCoursesProvider>();
-            var cache = services.GetRequiredService<ICacheProvider>();
-            var executionContext = services.GetRequiredService<IExecutionContextAccessor>();
+            var courcesProvider = s.GetRequiredService<UsosCoursesProvider>();
+            var cache = s.GetRequiredService<ICacheProvider>();
+            var executionContext = s.GetRequiredService<IExecutionContextAccessor>();
 
             return new CachedCoursesProvider(courcesProvider, cache, executionContext);
         });
 
         services.AddScoped<UsosTimeTableProvider>();
-        services.AddScoped<ITimeTableProvider>(services =>
+        services.AddScoped<ITimeTableProvider>(s =>
         {
-            var timeTableProvider = services.GetRequiredService<UsosTimeTableProvider>();
-            var cache = services.GetRequiredService<ICacheProvider>();
-            var executionContext = services.GetRequiredService<IExecutionContextAccessor>();
+            var timeTableProvider = s.GetRequiredService<UsosTimeTableProvider>();
+            var cache = s.GetRequiredService<ICacheProvider>();
+            var executionContext = s.GetRequiredService<IExecutionContextAccessor>();
 
             return new CachedTimeTableProvider(timeTableProvider, cache, executionContext);
         });
