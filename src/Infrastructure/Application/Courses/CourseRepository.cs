@@ -14,7 +14,7 @@ public class CourseRepository(ICoursesProvider coursesProvider, IExecutionContex
         var courseEdition = await coursesProvider.GetCourseEdition(courseId, termId);
 
         var group = courseEdition.UserGroups[0];
-
+        
         var lecturers = group.Lecturers.Select(l => new Lecturer
         {
             Id = l.Id, FirstName = l.FirstName, LastName = l.LastName

@@ -1,13 +1,15 @@
 using App.Application.Configuration.Commands;
 using App.Domain.Notifications;
 using App.Domain.UserAccess.Authentication;
+using ILogger = Serilog.ILogger;
 
 namespace App.Application.Grades.NotifyAboutNewGrade;
 
 public class NotifyAboutNewGradeCommandHandler(
     IAuthenticationSessionRepository authenticationSessionRepository,
     IGradesRepository gradesRepository,
-    INotificationRepository notificationRepository) : ICommandHandler<NotifyAboutNewGradeCommand>
+    INotificationRepository notificationRepository,
+    ILogger logger) : ICommandHandler<NotifyAboutNewGradeCommand>
 {
     public async Task Handle(NotifyAboutNewGradeCommand command, CancellationToken cancellationToken)
     {
@@ -26,9 +28,12 @@ public class NotifyAboutNewGradeCommandHandler(
                     var notification = new Notification(userId, NotificationType.Grades, GenerateNotificationContent(grade));
                     await notificationRepository.AddAsync(notification);
                 }
-                catch (Exception)
+                catch (Exception exception)
                 {
-                    continue;
+                    logger.Warning(
+                        "Notification about new grade wasn't sent to user with ID {UserId} due to error: {Message}",
+                        userId,
+                        exception.Message);
                 }
             }
         }
