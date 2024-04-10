@@ -67,9 +67,9 @@ internal class OAuthRequestFactory(UsosClientConfiguration configuration, IExecu
         return request;
     }
 
-    public async Task<Request> CreateGetRequestAsync(string path, Action<Request>? configureRequest = null)
+    public async Task<Request> CreateGetRequestAsync(string path, Action<Request>? configureRequest = null, Guid? providedSessionId = null)
     {
-        var sessionId = new AuthenticationSessionId(context.SessionId);
+        var sessionId = new AuthenticationSessionId(providedSessionId ?? context.SessionId);
         var session = await authenticationSessionRepository.GetByIdAsync(sessionId);
 
         var institutionConfiguration = configuration.Institutions[session.InstitutionId.Value.ToString()];

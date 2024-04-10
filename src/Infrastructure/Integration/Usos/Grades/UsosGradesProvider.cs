@@ -4,8 +4,29 @@ using App.Infrastructure.Integration.Requests;
 
 namespace App.Infrastructure.Integration.Usos.Grades;
 
-internal class UsosGradesProvider(IUsosHttpClient client, IAuthorizedRequestFactory requestFactory, IExecutionContextAccessor context) : IGradesProvider
+internal class UsosGradesProvider(
+    IUsosHttpClient client,
+    IAuthorizedRequestFactory requestFactory,
+    IExecutionContextAccessor context) : IGradesProvider
 {
+    public async Task<GradeDto> GetGrade(Guid sessionId, string examId, int sessionNumber)
+    {
+        var request = await requestFactory.CreateGetRequestAsync("services/grades/grade",
+            r => r.WithQueryParameter("exam_id", examId)
+                .WithQueryParameter("exam_session_number", sessionNumber)
+                .WithQueryParameter("fields", "value_symbol|passes|value_description|exam_id|exam_session_number|counts_into_average|comment|grade_type_id|date_modified|date_acquisition|modification_author|unit[course_name|term_id]"),
+            sessionId);
+
+        var response = await client.SendAsync(request);
+
+        if (!response.IsSuccessful())
+        {
+            throw response.ToException(context.Language);
+        }
+
+        return response.Content!.As<GradeDto>();
+    }
+
     public async Task<GradesDistributionDto> GetExamGradesDistribution(string examId)
     {
         var request = await requestFactory.CreateGetRequestAsync("services/examrep/exam",

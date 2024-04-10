@@ -50,6 +50,8 @@ public class SessionGrade
     public DateTime? ModifiedAt { get; set; }
 
     public GradeAuthor? ModifiedBy { get; set; }
+
+    public Unit? Unit { get; set; }
 }
 
 public class GradeAuthor
@@ -66,4 +68,11 @@ public class GradesDistributionItem
     public decimal Percentage { get; set; }
 
     public string Grade { get; set; }
+}
+
+public class Unit
+{
+    public IDictionary<string, string> CourseName { get; set; }
+
+    public string TermId { get; set; }
 }

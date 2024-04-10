@@ -5,6 +5,11 @@ namespace App.Infrastructure.Integration.Usos.Grades;
 
 internal class CachedGradesProvider(IGradesProvider gradesProvider, ICacheProvider cache, IExecutionContextAccessor context) : IGradesProvider
 {
+    public async Task<GradeDto> GetGrade(Guid sessionId, string examId, int sessionNumber)
+    {
+        return await gradesProvider.GetGrade(sessionId, examId, sessionNumber);
+    }
+
     public async Task<GradesDistributionDto> GetExamGradesDistribution(string examId)
     {
         var gradesDistribution = await cache.GetAsync<GradesDistributionDto>($"usos-grades-distribution-{examId}");

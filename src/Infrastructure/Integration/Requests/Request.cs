@@ -12,6 +12,7 @@ internal abstract class Request(HttpMethod method, string path)
 
     public HttpContent? Content { get; protected set; }
 
+
     public IDictionary<string, string> Headers = new Dictionary<string, string>();
 
     public Request WithQueryParameter(string key, object value)
