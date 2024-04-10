@@ -6,8 +6,6 @@ internal abstract class Request(HttpMethod method, string path)
 {
     public HttpMethod Method { get; } = method;
 
-    public Guid? SessionId { get; private set; }
-
     private string Path { get; } = path;
 
     private IDictionary<string, object> _queryParameters = new Dictionary<string, object>();

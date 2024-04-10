@@ -1,4 +1,6 @@
+using System.Text.RegularExpressions;
 using App.Application.Configuration.Commands;
+using App.Application.Notifications;
 using App.Domain.Notifications;
 using App.Domain.UserAccess.Authentication;
 using ILogger = Serilog.ILogger;
@@ -9,6 +11,7 @@ public class NotifyAboutNewGradeCommandHandler(
     IAuthenticationSessionRepository authenticationSessionRepository,
     IGradesRepository gradesRepository,
     INotificationRepository notificationRepository,
+    IPushNotificationSender pushNotificationSender,
     ILogger logger) : ICommandHandler<NotifyAboutNewGradeCommand>
 {
     public async Task Handle(NotifyAboutNewGradeCommand command, CancellationToken cancellationToken)
@@ -27,6 +30,16 @@ public class NotifyAboutNewGradeCommandHandler(
 
                     var notification = new Notification(userId, NotificationType.Grades, GenerateNotificationContent(grade));
                     await notificationRepository.AddAsync(notification);
+
+                    await pushNotificationSender.SendAsync(new OneSignalPushNotification
+                    {
+                        Id = notification.Id.Value,
+                        SessionId = session.Id.Value,
+                        HeadingInEnglish = "New grade",
+                        HeadingInPolish = "Nowa ocena",
+                        ContentInEnglish = Regex.Replace(notification.Content.En, @"<[^>]*>", string.Empty),
+                        ContentInPolish = Regex.Replace(notification.Content.Pl, @"<[^>]*>", string.Empty),
+                    });
                 }
                 catch (Exception exception)
                 {

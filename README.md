@@ -33,3 +33,9 @@
    ```bash
     dotnet user-secrets set "Usos:Institutions:**InstitutionId**:ConsumerSecret" "**ConsumerSecret**" --project src/API
    ```
+   ```bash
+    dotnet user-secrets set "OneSignal:AccessToken" "**OneSignalAccessToken**" --project src/API
+   ```
+   ```bash
+    dotnet user-secrets set "OneSignal:AppId" "**OneSignalAppId**" --project src/API
+   ```

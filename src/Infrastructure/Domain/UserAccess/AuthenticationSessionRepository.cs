@@ -6,8 +6,6 @@ namespace App.Infrastructure.Domain.UserAccess;
 
 public class AuthenticationSessionRepository(Context context) : IAuthenticationSessionRepository
 {
-    private AuthenticationSession? _cachedAuthenticationSession;
-
     public async Task AddAsync(AuthenticationSession session)
     {
         await context.AddAsync(session);
@@ -15,11 +13,6 @@ public class AuthenticationSessionRepository(Context context) : IAuthenticationS
 
     public async Task<AuthenticationSession> GetByIdAsync(AuthenticationSessionId id)
     {
-        if (_cachedAuthenticationSession is not null)
-        {
-            return _cachedAuthenticationSession;
-        }
-
         var session = await context.AuthenticationSessions.SingleOrDefaultAsync(s => s.Id == id);
 
         if (session is null)
@@ -27,17 +20,12 @@ public class AuthenticationSessionRepository(Context context) : IAuthenticationS
             throw new NotFoundRepositoryException<AuthenticationSession>(id.Value);
         }
 
-        return _cachedAuthenticationSession = session;
+        return session;
     }
 
     public async Task<AuthenticationSession?> GetByIdOrDefaultAsync(AuthenticationSessionId id)
     {
-        if (_cachedAuthenticationSession is not null)
-        {
-            return _cachedAuthenticationSession;
-        }
-
-        return _cachedAuthenticationSession = await context.AuthenticationSessions.SingleOrDefaultAsync(s => s.Id == id);
+        return await context.AuthenticationSessions.SingleOrDefaultAsync(s => s.Id == id);
     }
 
     public async Task<AuthenticationSession?> GetByUserIdOrDefaultAsync(string userId)
