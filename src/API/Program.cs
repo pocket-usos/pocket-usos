@@ -3,10 +3,9 @@ using App.API.Configuration.Integration;
 using App.Application.Configuration;
 using App.Infrastructure.Configuration;
 using App.Infrastructure.Integration.Exceptions;
+using Community.Microsoft.Extensions.Caching.PostgreSql;
 using Destructurama;
 using Hellang.Middleware.ProblemDetails;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Serilog;
 using Serilog.Enrichers.Sensitive;
 using ILogger = Serilog.ILogger;
@@ -43,11 +42,13 @@ public class Program
             x.Map<UsosIntegrationException>(ex => new UsosIntegrationProblemDetails(ex));
         });
 
-        builder.Services.AddStackExchangeRedisCache(options =>
+        builder.Services.AddDistributedPostgreSqlCache(options =>
         {
-            options.Configuration = builder.Configuration.GetConnectionString("Cache");
+            options.ConnectionString = builder.Configuration.GetConnectionString("App");
+            options.SchemaName = "cache";
+            options.TableName = "cache";
+
         });
-        builder.Services.Add(ServiceDescriptor.Singleton<IDistributedCache, RedisCache>());
 
         builder.Services.AddApplicationServices(builder.Configuration);
 
