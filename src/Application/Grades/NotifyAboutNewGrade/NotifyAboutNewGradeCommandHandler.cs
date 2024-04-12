@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using App.Application.Configuration.Commands;
 using App.Application.Notifications;
+using App.Domain.Institutions;
 using App.Domain.Notifications;
 using App.Domain.UserAccess.Authentication;
 using ILogger = Serilog.ILogger;
@@ -28,7 +29,12 @@ public class NotifyAboutNewGradeCommandHandler(
                 {
                     var grade = await gradesRepository.GetGrade(session.Id, entry.ExamId, entry.ExamSessionNumber);
 
-                    var notification = new Notification(userId, NotificationType.Grades, GenerateNotificationContent(grade));
+                    var notification = new Notification(
+                        userId,
+                        new InstitutionId(command.InstitutionId),
+                        NotificationType.Grades,
+                        GenerateNotificationContent(grade));
+
                     await notificationRepository.AddAsync(notification);
 
                     await pushNotificationSender.SendAsync(new OneSignalPushNotification
