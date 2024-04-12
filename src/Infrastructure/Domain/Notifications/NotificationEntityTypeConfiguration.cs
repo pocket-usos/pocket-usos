@@ -1,3 +1,4 @@
+using App.Domain.Institutions;
 using App.Domain.Notifications;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -12,8 +13,9 @@ public class NotificationEntityTypeConfiguration : IEntityTypeConfiguration<Noti
         builder.HasKey(n => n.Id);
         builder.Property<NotificationId>(n => n.Id).HasColumnName("id");
 
+        builder.Property<InstitutionId>(n => n.InstitutionId).HasColumnName("institution_id");
         builder.Property<string>(n => n.UserId).HasColumnName("user_id");
-        builder.HasIndex(n => n.UserId);
+        builder.HasIndex("UserId", "InstitutionId");
 
         builder.Property(n => n.WasRead).HasColumnName("was_read");
         builder.Property(n => n.CreatedAt).HasColumnName("created_at");

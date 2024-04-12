@@ -1,3 +1,4 @@
+using App.Domain.Institutions;
 using App.Domain.Notifications;
 using App.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
@@ -23,9 +24,9 @@ public class NotificationRepository(Context context) : INotificationRepository
         return notification;
     }
 
-    public async Task<IEnumerable<Notification>> GetByUserIdAsync(string userId)
+    public async Task<IEnumerable<Notification>> GetByInstitutionIdAndUserIdAsync(InstitutionId institutionId, string userId)
     {
-        return await context.Notifications.Where(n => n.UserId == userId).ToListAsync();
+        return await context.Notifications.Where(n => n.UserId == userId && n.InstitutionId.Equals(institutionId)).ToListAsync();
     }
 
     public async Task SaveAsync()

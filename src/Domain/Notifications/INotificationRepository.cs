@@ -1,4 +1,5 @@
 using App.Domain.BuildingBlocks;
+using App.Domain.Institutions;
 
 namespace App.Domain.Notifications;
 
@@ -8,5 +9,5 @@ public interface INotificationRepository : IRepository
 
     Task<Notification> GetByIdAsync(NotificationId id);
 
-    Task<IEnumerable<Notification>> GetByUserIdAsync(string userId);
+    Task<IEnumerable<Notification>> GetByInstitutionIdAndUserIdAsync(InstitutionId institutionId, string userId);
 }
