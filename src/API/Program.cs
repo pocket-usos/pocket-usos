@@ -12,7 +12,7 @@ using ILogger = Serilog.ILogger;
 
 namespace App.API;
 
-public class Program
+public static class Program
 {
     private static ILogger _logger;
 
@@ -54,7 +54,6 @@ public class Program
 
         var app = builder.Build();
 
-        // TODO: change for production
         app.UseCors(corsPolicyBuilder => corsPolicyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
         app.UseHttpsRedirection();
         app.UseRouting();

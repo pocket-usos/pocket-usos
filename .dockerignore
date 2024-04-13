@@ -1,0 +1,80 @@
+# flyctl launch added from .gitignore
+**/bin
+**/obj
+packages
+**/riderModule.iml
+_ReSharper.Caches
+**/.idea
+**/docs/C4/plantuml-icon-font-sprites
+**/.DS_Store
+**/src/API/tempkey.jwk
+**/.env
+**/.vs
+
+# User-specific files
+**/*.rsuser
+**/*.suo
+**/*.user
+**/*.userosscache
+**/*.sln.docstates
+**/*.sln.DotSettings
+**/*.csproj.DotSettings
+
+# flyctl launch added from .idea/.idea.PocketUSOS/.idea/.gitignore
+# Default ignored files
+.idea/.idea.PocketUSOS/.idea/shelf
+.idea/.idea.PocketUSOS/.idea/workspace.xml
+# Rider ignored files
+.idea/.idea.PocketUSOS/.idea/modules.xml
+.idea/.idea.PocketUSOS/.idea/.idea.PocketUSOS.iml
+.idea/.idea.PocketUSOS/.idea/contentModel.xml
+.idea/.idea.PocketUSOS/.idea/projectSettingsUpdater.xml
+# Editor-based HTTP Client requests
+.idea/.idea.PocketUSOS/.idea/httpRequests
+# Datasource local storage ignored files
+.idea/.idea.PocketUSOS/.idea/dataSources
+.idea/.idea.PocketUSOS/.idea/dataSources.local.xml
+
+# flyctl launch added from docs/C4/plantuml-icon-font-sprites/.gitignore
+# Logs
+docs/C4/plantuml-icon-font-sprites/**/logs
+docs/C4/plantuml-icon-font-sprites/**/*.log
+docs/C4/plantuml-icon-font-sprites/**/npm-debug.log*
+docs/C4/plantuml-icon-font-sprites/**/yarn-debug.log*
+docs/C4/plantuml-icon-font-sprites/**/yarn-error.log*
+
+# Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
+docs/C4/plantuml-icon-font-sprites/**/.grunt
+
+# npm, yarn, build etc
+docs/C4/plantuml-icon-font-sprites/**/.vscode
+docs/C4/plantuml-icon-font-sprites/**/.sass-cache
+docs/C4/plantuml-icon-font-sprites/**/yarn.lock
+docs/C4/plantuml-icon-font-sprites/**/package-lock.json
+
+# Bower dependency directory (https://bower.io/)
+docs/C4/plantuml-icon-font-sprites/**/bower_components
+
+# Dependency directories
+docs/C4/plantuml-icon-font-sprites/**/node_modules
+docs/C4/plantuml-icon-font-sprites/**/jspm_packages
+
+# Optional eslint cache
+docs/C4/plantuml-icon-font-sprites/**/.eslintcache
+
+# Os
+docs/C4/plantuml-icon-font-sprites/**/Thumbs.db
+docs/C4/plantuml-icon-font-sprites/**/ehthumbs.db
+docs/C4/plantuml-icon-font-sprites/**/Desktop.ini
+docs/C4/plantuml-icon-font-sprites/**/.directory
+docs/C4/plantuml-icon-font-sprites/**/*~
+docs/C4/plantuml-icon-font-sprites/**/.DS_Store
+
+# maven & eclipse
+docs/C4/plantuml-icon-font-sprites/**/target
+docs/C4/plantuml-icon-font-sprites/**/.classpath
+docs/C4/plantuml-icon-font-sprites/**/.project
+
+# project specific
+docs/C4/plantuml-icon-font-sprites/**/.tmp
+fly.toml
