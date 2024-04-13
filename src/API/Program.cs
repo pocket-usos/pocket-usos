@@ -1,11 +1,15 @@
+using System.Text;
+using System.Text.RegularExpressions;
 using App.API.Configuration;
 using App.API.Configuration.Integration;
 using App.Application.Configuration;
+using App.Infrastructure;
 using App.Infrastructure.Configuration;
 using App.Infrastructure.Integration.Exceptions;
 using Community.Microsoft.Extensions.Caching.PostgreSql;
 using Destructurama;
 using Hellang.Middleware.ProblemDetails;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Enrichers.Sensitive;
 using ILogger = Serilog.ILogger;
@@ -21,6 +25,7 @@ public static class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        builder.Configuration.AddEnvironmentVariables();
 
         ConfigureLogger(builder.Environment);
         builder.Services.AddSingleton(_logger);
@@ -42,15 +47,17 @@ public static class Program
             x.Map<UsosIntegrationException>(ex => new UsosIntegrationProblemDetails(ex));
         });
 
+        var connectionString = GetConnectionString(builder.Environment, builder.Configuration);
+
         builder.Services.AddDistributedPostgreSqlCache(options =>
         {
-            options.ConnectionString = builder.Configuration.GetConnectionString("App");
+            options.ConnectionString = connectionString;
             options.SchemaName = "cache";
             options.TableName = "cache";
 
         });
 
-        builder.Services.AddApplicationServices(builder.Configuration);
+        builder.Services.AddApplicationServices(builder.Configuration, connectionString);
 
         var app = builder.Build();
 
@@ -83,7 +90,17 @@ public static class Program
 
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
+        ApplyDbMigrations(app);
+
         app.Run();
+    }
+
+    private static void ApplyDbMigrations(WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+
+        var context = scope.ServiceProvider.GetRequiredService<Context>();
+        context.Database.Migrate();
     }
 
     private static void ConfigureLogger(IWebHostEnvironment environment)
@@ -102,5 +119,39 @@ public static class Program
         }
 
         _logger = _loggerConfiguration.CreateLogger();
+    }
+
+    private static string GetConnectionString(IWebHostEnvironment environment, IConfiguration configuration)
+    {
+        if (environment.IsDevelopment())
+        {
+            return configuration.GetConnectionString("App")!;
+        }
+
+        var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL")!;
+
+        var regex = new Regex(@"postgres://(?<user>[^:]+):(?<pass>[^@]+)@(?<host>[^:/]+):(?<port>\d+)/(?<database>[^?]+)\?sslmode=(?<sslmode>\w+)");
+        var match = regex.Match(databaseUrl);
+
+        if (!match.Success)
+        {
+            throw new ArgumentException("Invalid DATABASE_URL environment variable format");
+        }
+
+        var connectionString = new StringBuilder("Server=")
+            .Append(match.Groups["host"].Value)
+            .Append(";Port=")
+            .Append(match.Groups["port"].Value)
+            .Append(";User Id=")
+            .Append(match.Groups["user"].Value)
+            .Append(";Password=")
+            .Append(match.Groups["pass"].Value)
+            .Append(";Database=")
+            .Append(match.Groups["database"].Value)
+            .Append(";SSL Mode=")
+            .Append(match.Groups["sslmode"].Value)
+            .ToString();
+
+        return connectionString;
     }
 }

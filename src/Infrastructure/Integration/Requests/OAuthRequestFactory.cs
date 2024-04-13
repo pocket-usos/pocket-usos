@@ -13,7 +13,7 @@ internal class OAuthRequestFactory(UsosClientConfiguration configuration, IExecu
         var sessionId = new AuthenticationSessionId(context.SessionId);
         var session = await authenticationSessionRepository.GetByIdAsync(sessionId);
 
-        var institutionConfiguration = configuration.Institutions[session.InstitutionId.Value.ToString()];
+        var institutionConfiguration = configuration.Institutions[session.InstitutionId.ToBase64String()];
         var institution = await institutionRepository.GetByIdAsync(session.InstitutionId);
 
         var fullPath = institution.BaseUrl + path;
@@ -42,7 +42,7 @@ internal class OAuthRequestFactory(UsosClientConfiguration configuration, IExecu
 
     public async Task<Request> CreateRequestTokenRequestAsync(Guid institutionId, string path, Action<Request>? configureRequest = null)
     {
-        var institutionConfiguration = configuration.Institutions[institutionId.ToString()];
+        var institutionConfiguration = configuration.Institutions[new InstitutionId(institutionId).ToBase64String()];
         var institution = await institutionRepository.GetByIdAsync(new InstitutionId(institutionId));
 
         var fullPath = institution.BaseUrl + path;
@@ -72,7 +72,7 @@ internal class OAuthRequestFactory(UsosClientConfiguration configuration, IExecu
         var sessionId = new AuthenticationSessionId(providedSessionId ?? context.SessionId);
         var session = await authenticationSessionRepository.GetByIdAsync(sessionId);
 
-        var institutionConfiguration = configuration.Institutions[session.InstitutionId.Value.ToString()];
+        var institutionConfiguration = configuration.Institutions[session.InstitutionId.ToBase64String()];
         var institution = await institutionRepository.GetByIdAsync(session.InstitutionId);
 
         var fullPath = institution.BaseUrl + path;
