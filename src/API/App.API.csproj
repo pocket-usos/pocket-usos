@@ -6,7 +6,8 @@
         <NoWarn>CS8618,ASP0014</NoWarn>
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>App.API</RootNamespace>
-      <UserSecretsId>3df148ba-34c7-4d26-865e-1099342d1a46</UserSecretsId>
+        <ServerGarbageCollection>false</ServerGarbageCollection>
+        <UserSecretsId>3df148ba-34c7-4d26-865e-1099342d1a46</UserSecretsId>
   </PropertyGroup>
 
     <ItemGroup>

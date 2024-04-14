@@ -25,7 +25,7 @@ internal class UsosAuthorizeFilter(IAuthenticationSessionRepository authenticati
 
         if (session.AccessToken is null)
         {
-            context.Result = Error(UnauthorizedProblemDetails.SessionIsNotAthorizedInUsos);
+            context.Result = Error(UnauthorizedProblemDetails.SessionIsNotAuthorizedInUsos);
         }
     }
 

@@ -7,13 +7,11 @@ namespace App.Infrastructure.Configuration;
 
 public static class ApplicationCollectionExtensions
 {
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration, string connectionString)
     {
-        var connectionString = configuration.GetConnectionString("App");
-
         services.AddScoped<IGateway, Gateway>();
 
-        services.AddDataAccess(connectionString!);
+        services.AddDataAccess(connectionString);
         services.AddIntegration(configuration);
         services.AddMediatRForAssemblies(Assemblies.Application, Assemblies.Infrastructure);
         services.AddNotifications(configuration);

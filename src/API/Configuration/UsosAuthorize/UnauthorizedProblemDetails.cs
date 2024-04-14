@@ -8,7 +8,7 @@ internal static class UnauthorizedProblemDetails
 
     public static ProblemDetails SessionDoesNotExist => Create("Provided session id does not exist");
 
-    public static ProblemDetails SessionIsNotAthorizedInUsos => Create("Provided session id is not authorized in USOS");
+    public static ProblemDetails SessionIsNotAuthorizedInUsos => Create("Provided session id is not authorized in USOS");
 
     private static ProblemDetails Create(string detail) => new()
     {
