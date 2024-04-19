@@ -6,7 +6,7 @@ public class TermGrades(string term)
 {
     public string Term { get; set; } = term;
 
-    public decimal AverageGrade { get; set; }
+    public decimal? AverageGrade { get; set; }
 
     public List<TermCourse> Courses { get; set; } = new();
 }

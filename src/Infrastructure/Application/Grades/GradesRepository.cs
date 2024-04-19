@@ -1,3 +1,4 @@
+using System.Globalization;
 using App.Application.Configuration;
 using App.Application.Grades;
 using App.Application.Shared;
@@ -15,7 +16,6 @@ public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider c
         var grades = await gradesProvider.GetGradesForTerm(term);
 
         var termGrades = new TermGrades(term);
-        var gradesToCalculateAverage = new List<decimal>();
 
         foreach (var (_, courses) in grades)
         {
@@ -35,11 +35,6 @@ public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider c
 
                         var sessionGrade = CreateSessionGrade(sessionNumber, grade, context.Language);
                         termCourseUnit.Grades.Add(sessionGrade);
-
-                        if (sessionGrade.CountsIntoAverage && decimal.TryParse(sessionGrade.Grade.Replace(",", "."), out var decimalGrade))
-                        {
-                            gradesToCalculateAverage.Add(decimalGrade);
-                        }
                     }
 
                     termCourse.Units.Add(termCourseUnit);
@@ -49,12 +44,36 @@ public class GradesRepository(IGradesProvider gradesProvider, ICoursesProvider c
             }
         }
 
-        if (gradesToCalculateAverage.Count > 0)
-        {
-            termGrades.AverageGrade = Math.Round(gradesToCalculateAverage.Sum() / gradesToCalculateAverage.Count, 2);
-        }
+        termGrades.AverageGrade = CalculateAverageGrade(termGrades.Courses);
 
         return termGrades;
+    }
+
+    private decimal? CalculateAverageGrade(List<TermCourse> courses)
+    {
+        var gradesToCalculateAverage = new List<decimal>();
+
+        foreach (var course in courses)
+        {
+            foreach (var unit in course.Units)
+            {
+                if (unit.Grades.Any())
+                {
+                    var lastGrade = unit.Grades.Last();
+                    if (lastGrade.CountsIntoAverage && decimal.TryParse(lastGrade.Grade.Replace(",", "."), CultureInfo.InvariantCulture, out var decimalGrade))
+                    {
+                        gradesToCalculateAverage.Add(decimalGrade);
+                    }
+                }
+            }
+        }
+
+        if (gradesToCalculateAverage.Count > 0)
+        {
+            return Math.Round(gradesToCalculateAverage.Sum() / gradesToCalculateAverage.Count, 2);
+        }
+
+        return null;
     }
 
     public async Task<SessionGrade> GetGrade(AuthenticationSessionId sessionId, string examId, int sessionNumber)
