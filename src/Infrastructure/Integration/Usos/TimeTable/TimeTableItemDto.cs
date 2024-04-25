@@ -18,7 +18,7 @@ public class TimeTableItemDto
 
     public required int GroupNumber { get; set; }
 
-    public required int RoomId { get; set; }
+    public int? RoomId { get; set; }
 
     public required string RoomNumber { get; set; }
 
