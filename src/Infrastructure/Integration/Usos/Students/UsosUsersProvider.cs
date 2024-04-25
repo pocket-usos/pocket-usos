@@ -9,12 +9,15 @@ internal class UsosUsersProvider(IUsosHttpClient client, IAuthorizedRequestFacto
     public async Task<UserDto> GetUser(string? id = null)
     {
         var request = await requestFactory.CreateGetRequestAsync("services/users/user",
-            r => r.WithQueryParameter("fields", "id|first_name|last_name|sex|student_status|email|phone_numbers|mobile_numbers|photo_urls|student_number|pesel|birth_date|citizenship|student_programmes|postal_addresses|library_card_id|titles|office_hours|course_editions_conducted"));
+            r =>
+            {
+                r.WithQueryParameter("fields", "id|first_name|last_name|sex|student_status|email|phone_numbers|mobile_numbers|photo_urls|student_number|pesel|birth_date|citizenship|student_programmes|postal_addresses|library_card_id|titles|office_hours|course_editions_conducted");
 
-        if (id is not null)
-        {
-            request.WithQueryParameter("user_id", id);
-        }
+                if (id is not null)
+                {
+                    r.WithQueryParameter("user_id", id);
+                }
+            });
 
         var response = await client.SendAsync(request);
 
