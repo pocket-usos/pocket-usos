@@ -20,7 +20,7 @@ public class ScheduleItem
 
     public int GroupNumber { get; set; }
 
-    public Room Room { get; set; }
+    public Room? Room { get; set; }
 }
 
 public class Room

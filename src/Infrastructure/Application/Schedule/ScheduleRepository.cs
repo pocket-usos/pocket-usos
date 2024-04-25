@@ -30,11 +30,11 @@ public class ScheduleRepository(ITimeTableProvider timeTableProvider, IUserRepos
                 CourseUnitId = item.UnitId,
                 ClassType = new ClassType(item.ClasstypeId, item.ClasstypeName.Translate(context.Language)),
                 GroupNumber = item.GroupNumber,
-                Room = new Room
+                Room = item.RoomId is not null ? new Room
                 {
-                    Id = item.RoomId,
+                    Id = item.RoomId.Value,
                     Name = item.RoomNumber
-                },
+                } : null,
                 Lecturers = lecturers.Select(l => new Lecturer
                 {
                     Id = l.Id,
@@ -66,11 +66,11 @@ public class ScheduleRepository(ITimeTableProvider timeTableProvider, IUserRepos
                 CourseUnitId = item.UnitId,
                 ClassType = new ClassType(item.ClasstypeId, item.ClasstypeName.Translate(context.Language)),
                 GroupNumber = item.GroupNumber,
-                Room = new Room
+                Room = item.RoomId is not null ? new Room
                 {
-                    Id = item.RoomId,
+                    Id = item.RoomId.Value,
                     Name = item.RoomNumber
-                },
+                } : null,
                 Lecturers = new List<Lecturer>()
             };
 
