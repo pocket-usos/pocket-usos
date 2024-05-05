@@ -47,4 +47,10 @@ public class GradesController(IGateway gateway) : ControllerBase
 
         return Ok();
     }
+
+    [HttpGet("{institutionId}")]
+    public IActionResult GradeEventSubscriptionVerification([FromQuery(Name = "hub.challenge")] string challenge)
+    {
+        return Ok(challenge);
+    }
 }
