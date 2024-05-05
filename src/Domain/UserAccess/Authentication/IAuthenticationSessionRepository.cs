@@ -1,4 +1,5 @@
 using App.Domain.BuildingBlocks;
+using App.Domain.Institutions;
 
 namespace App.Domain.UserAccess.Authentication;
 
@@ -10,7 +11,7 @@ public interface IAuthenticationSessionRepository : IRepository
 
     Task<AuthenticationSession?> GetByIdOrDefaultAsync(AuthenticationSessionId id);
 
-    Task<AuthenticationSession?> GetByUserIdOrDefaultAsync(string userId);
+    Task<AuthenticationSession?> GetByUserIdAndInstitutionIdOrDefaultAsync(string userId, InstitutionId institutionId);
 
     Task RemoveAsync(AuthenticationSessionId authenticationSessionId);
 }

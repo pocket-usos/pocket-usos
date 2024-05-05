@@ -21,7 +21,7 @@ public class NotifyAboutNewGradeCommandHandler(
         {
             foreach (var userId in entry.RelatedUserIds)
             {
-                var session = await authenticationSessionRepository.GetByUserIdOrDefaultAsync(userId);
+                var session = await authenticationSessionRepository.GetByUserIdAndInstitutionIdOrDefaultAsync(userId, new InstitutionId(command.InstitutionId));
 
                 if (session is null) continue;
 

@@ -1,3 +1,4 @@
+using App.Domain.Institutions;
 using App.Domain.UserAccess.Authentication;
 using App.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
@@ -28,9 +29,9 @@ public class AuthenticationSessionRepository(Context context) : IAuthenticationS
         return await context.AuthenticationSessions.SingleOrDefaultAsync(s => s.Id == id);
     }
 
-    public async Task<AuthenticationSession?> GetByUserIdOrDefaultAsync(string userId)
+    public async Task<AuthenticationSession?> GetByUserIdAndInstitutionIdOrDefaultAsync(string userId, InstitutionId institutionId)
     {
-        return await context.AuthenticationSessions.FirstOrDefaultAsync(s => s.UserId == userId);
+        return await context.AuthenticationSessions.FirstOrDefaultAsync(s => s.UserId == userId && s.InstitutionId == institutionId);
     }
 
     public async Task RemoveAsync(AuthenticationSessionId authenticationSessionId)
